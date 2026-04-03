@@ -161,7 +161,8 @@ class CalculatorUI(ctk.CTk):
         self.current_mode = "standard"  # standard, scientific, currency
         self.current_expression = ""
         self.current_result = "0"
-        self.memory = 0.0
+        self.memory_list = []  # List of saved memory values
+        self.selected_memory_index = -1  # Currently selected memory entry
 
         # File paths
         self.base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -174,8 +175,8 @@ class CalculatorUI(ctk.CTk):
 
         # Configure window
         self.title("Calculator")
-        self.geometry("900x600")
-        self.minsize(700, 500)
+        self.geometry("1100x600")
+        self.minsize(800, 500)
 
         # Apply theme
         self._apply_theme()
@@ -212,6 +213,9 @@ class CalculatorUI(ctk.CTk):
 
         # Content area
         self._create_content_area(main_frame)
+
+        # Memory panel (right side)
+        self._create_memory_panel(main_frame)
 
     def _create_sidebar(self, parent):
         """Create Windows 11-style navigation sidebar."""
@@ -310,6 +314,136 @@ class CalculatorUI(ctk.CTk):
         self.current_result = "0"
         self._update_nav_selection()
         self._create_content_area()
+
+    def _create_memory_panel(self, parent):
+        """Create memory panel on the right side."""
+        theme = THEMES[self.current_theme]
+
+        panel = ctk.CTkFrame(parent, width=220, fg_color=theme["sidebar_bg"])
+        panel.grid(row=0, column=2, sticky="ns")
+        panel.grid_propagate(False)
+
+        # Title
+        title = ctk.CTkLabel(
+            panel, text="Memory",
+            font=ctk.CTkFont(size=18, weight="bold"),
+            text_color=theme["text_color"]
+        )
+        title.pack(pady=(20, 10))
+
+        # Separator
+        sep = ctk.CTkFrame(panel, height=1, fg_color=theme["border_color"])
+        sep.pack(fill="x", padx=15, pady=5)
+
+        # Memory list container
+        self.memory_list_frame = ctk.CTkScrollableFrame(
+            panel,
+            fg_color=theme["sidebar_bg"],
+            label_text=""
+        )
+        self.memory_list_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        self.memory_list_frame.grid_columnconfigure(0, weight=1)
+
+        # Clear all button
+        clear_btn = ctk.CTkButton(
+            panel,
+            text="Clear All",
+            font=ctk.CTkFont(size=13),
+            fg_color="transparent",
+            hover_color=theme["button_hover"],
+            text_color=theme["text_secondary"],
+            height=32,
+            corner_radius=6,
+            command=self._clear_all_memory
+        )
+        clear_btn.pack(pady=(5, 15), padx=15, fill="x")
+
+        # Refresh memory display
+        self._refresh_memory_display()
+
+    def _refresh_memory_display(self):
+        """Refresh the memory list display."""
+        theme = THEMES[self.current_theme]
+
+        # Clear existing
+        for widget in self.memory_list_frame.winfo_children():
+            widget.destroy()
+
+        if not self.memory_list:
+            empty_label = ctk.CTkLabel(
+                self.memory_list_frame,
+                text="No saved values\n\nUse MS to save\nthe current value",
+                font=ctk.CTkFont(size=12),
+                text_color=theme["text_secondary"]
+            )
+            empty_label.pack(pady=40)
+            return
+
+        for i, val in enumerate(self.memory_list):
+            # Format value nicely
+            if val == int(val):
+                display_val = str(int(val))
+            else:
+                display_val = f"{val:g}"
+
+            row_frame = ctk.CTkFrame(self.memory_list_frame, fg_color="transparent")
+            row_frame.grid(row=i, column=0, sticky="ew", pady=2)
+            row_frame.grid_columnconfigure(0, weight=1)
+
+            # Index label
+            idx_label = ctk.CTkLabel(
+                row_frame, text=f"M{i+1}",
+                font=ctk.CTkFont(size=11, weight="bold"),
+                text_color=theme["accent_color"],
+                width=25,
+                anchor="w"
+            )
+            idx_label.grid(row=0, column=0, padx=(5, 5))
+
+            # Value label
+            val_label = ctk.CTkLabel(
+                row_frame, text=display_val,
+                font=ctk.CTkFont(size=14),
+                text_color=theme["text_color"],
+                anchor="e"
+            )
+            val_label.grid(row=0, column=1, sticky="e", padx=5)
+
+            # Make clickable
+            for widget in row_frame.winfo_children():
+                widget.bind("<Button-1>", lambda e, idx=i: self._recall_memory(idx))
+            row_frame.bind("<Button-1>", lambda e, idx=i: self._recall_memory(idx))
+
+            # Hover effect
+            def on_enter(e, f=row_frame, bg=theme["button_bg"]):
+                f.configure(fg_color=bg)
+            def on_leave(e, f=row_frame):
+                f.configure(fg_color="transparent")
+
+            row_frame.bind("<Enter>", on_enter)
+            row_frame.bind("<Leave>", on_leave)
+            for widget in row_frame.winfo_children():
+                widget.bind("<Enter>", on_enter)
+                widget.bind("<Leave>", on_leave)
+
+    def _clear_all_memory(self):
+        """Clear all memory entries."""
+        self.memory_list = []
+        self.selected_memory_index = -1
+        self._save_memory()
+        self._refresh_memory_display()
+
+    def _recall_memory(self, index):
+        """Recall a memory value by index."""
+        if 0 <= index < len(self.memory_list):
+            val = self.memory_list[index]
+            self.selected_memory_index = index
+            self.current_expression = ""
+            if val == int(val):
+                self.current_result = str(int(val))
+            else:
+                self.current_result = f"{val:g}"
+            self._update_display()
 
     def _create_content_area(self, parent=None):
         """Create the main content area based on current mode."""
@@ -430,16 +564,6 @@ class CalculatorUI(ctk.CTk):
         display_frame.grid_propagate(False)
         display_frame.grid_columnconfigure(0, weight=1)
 
-        # Memory indicator
-        self.memory_label = ctk.CTkLabel(
-            display_frame,
-            text="M" if self.memory != 0 else "",
-            font=ctk.CTkFont(size=12),
-            text_color=theme["accent_color"],
-            anchor="w"
-        )
-        self.memory_label.grid(row=0, column=0, sticky="ew", padx=15, pady=(8, 0))
-
         # Expression label
         self.expr_label = ctk.CTkLabel(
             display_frame,
@@ -448,7 +572,7 @@ class CalculatorUI(ctk.CTk):
             text_color=theme["text_secondary"],
             anchor="e"
         )
-        self.expr_label.grid(row=1, column=0, sticky="ew", padx=15, pady=(5, 0))
+        self.expr_label.grid(row=0, column=0, sticky="ew", padx=15, pady=(15, 5))
 
         # Result label
         self.result_label = ctk.CTkLabel(
@@ -1032,7 +1156,7 @@ class CalculatorUI(ctk.CTk):
     # ==================== MEMORY SYSTEM ====================
 
     def _memory_action(self, action: str):
-        """Handle memory operations (Windows Calculator style)."""
+        """Handle memory operations (Windows Calculator style with list)."""
         # Get current displayed value
         display_val = self.current_result
         if display_val in ["0", "Error", ""]:
@@ -1044,52 +1168,67 @@ class CalculatorUI(ctk.CTk):
             current_val = 0.0
 
         if action == "MC":
-            self.memory = 0.0
+            # Clear all memory
+            self.memory_list = []
+            self.selected_memory_index = -1
         elif action == "MR":
-            # Recall memory - show it in display
-            self.current_expression = ""
-            self.current_result = str(self.memory)
-            # Format nicely
-            if self.memory == int(self.memory):
-                self.current_result = str(int(self.memory))
-            else:
-                self.current_result = f"{self.memory:g}"
+            # Recall last saved value or show list
+            if self.memory_list:
+                idx = self.selected_memory_index if self.selected_memory_index >= 0 else len(self.memory_list) - 1
+                self._recall_memory(idx)
         elif action == "M+":
-            # Add current value to memory
-            self.memory += current_val
+            # Add current value to selected memory entry
+            if self.selected_memory_index >= 0 and self.selected_memory_index < len(self.memory_list):
+                self.memory_list[self.selected_memory_index] += current_val
+            elif self.memory_list:
+                self.memory_list[-1] += current_val
+                self.selected_memory_index = len(self.memory_list) - 1
+            else:
+                self.memory_list.append(current_val)
+                self.selected_memory_index = 0
         elif action == "M-":
-            # Subtract current value from memory
-            self.memory -= current_val
+            # Subtract current value from selected memory entry
+            if self.selected_memory_index >= 0 and self.selected_memory_index < len(self.memory_list):
+                self.memory_list[self.selected_memory_index] -= current_val
+            elif self.memory_list:
+                self.memory_list[-1] -= current_val
+                self.selected_memory_index = len(self.memory_list) - 1
+            else:
+                self.memory_list.append(-current_val)
+                self.selected_memory_index = 0
         elif action == "MS":
-            # Store current value in memory
-            self.memory = current_val
+            # Store current value as new memory entry
+            self.memory_list.append(current_val)
+            self.selected_memory_index = len(self.memory_list) - 1
 
-        # Update memory indicator
-        if hasattr(self, 'memory_label'):
-            self.memory_label.configure(text="M" if self.memory != 0 else "")
-
-        # Save memory
+        # Save memory and refresh display
         self._save_memory()
+        self._refresh_memory_display()
         self._update_display()
 
     def _save_memory(self):
-        """Save memory to file."""
+        """Save memory list to file."""
         try:
-            data = {"memory": self.memory}
+            data = {
+                "memory_list": self.memory_list,
+                "selected_index": self.selected_memory_index
+            }
             with open(self.memory_file, 'w') as f:
                 json.dump(data, f)
         except Exception:
             pass
 
     def _load_memory(self):
-        """Load memory from file."""
+        """Load memory list from file."""
         try:
             if os.path.exists(self.memory_file):
                 with open(self.memory_file, 'r') as f:
                     data = json.load(f)
-                    self.memory = data.get("memory", 0.0)
+                    self.memory_list = data.get("memory_list", [])
+                    self.selected_memory_index = data.get("selected_index", -1)
         except Exception:
-            self.memory = 0.0
+            self.memory_list = []
+            self.selected_memory_index = -1
 
     # ==================== HISTORY SYSTEM ====================
 
