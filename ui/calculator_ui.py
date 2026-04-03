@@ -78,6 +78,7 @@ CURRENCY_RATES = {
     "RUB": 92.50,
     "ZAR": 18.95,
     "AMD": 403.50,  # Armenian Dram
+    "DRAM": 403.50,  # Armenian Dram (alias)
     "AED": 3.67,    # UAE Dirham
     "THB": 35.20,   # Thai Baht
     "IDR": 15650.0, # Indonesian Rupiah
@@ -117,7 +118,7 @@ CURRENCY_SYMBOLS = {
     "AUD": "A$", "CAD": "C$", "CHF": "Fr", "INR": "₹", "KRW": "₩",
     "MXN": "MX$", "BRL": "R$", "SGD": "S$", "HKD": "HK$", "NZD": "NZ$",
     "SEK": "kr", "NOK": "kr", "TRY": "₺", "RUB": "₽", "ZAR": "R",
-    "AMD": "֏", "AED": "د.إ", "THB": "฿", "IDR": "Rp", "MYR": "RM",
+    "AMD": "֏", "DRAM": "֏", "AED": "د.إ", "THB": "฿", "IDR": "Rp", "MYR": "RM",
     "PHP": "₱", "PLN": "zł", "CZK": "Kč", "HUF": "Ft", "ILS": "₪",
     "CLP": "CL$", "COP": "CO$", "ARS": "AR$", "EGP": "E£", "SAR": "﷼",
     "QAR": "﷼", "KWD": "KD", "BHD": "BD", "OMR": "﷼", "JOD": "JD",

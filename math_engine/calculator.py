@@ -54,7 +54,8 @@ class Calculator:
                     if numeric_result.is_integer:
                         result_str = str(int(numeric_result))
                     else:
-                        result_str = str(float(numeric_result))
+                        # Remove trailing zeros, only show decimals when needed
+                        result_str = f"{float(numeric_result):g}"
                 else:
                     result_str = str(result)
             except (TypeError, ValueError):
