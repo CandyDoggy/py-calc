@@ -1,7 +1,9 @@
 @echo off
-title Scientific Calculator
+title Calculator
+cd /d "%~dp0"
+
 echo ========================================
-echo   Scientific Calculator Launcher
+echo   Calculator Launcher
 echo ========================================
 echo.
 
