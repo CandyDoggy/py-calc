@@ -305,6 +305,12 @@ class CalculatorUI(ctk.CTk):
         main_frame.grid_columnconfigure(1, weight=1)
         main_frame.grid_rowconfigure(0, weight=1)
 
+        # Configure columns based on memory panel visibility
+        if self.memory_panel_visible:
+            main_frame.grid_columnconfigure(2, weight=0, minsize=220)
+        else:
+            main_frame.grid_columnconfigure(2, weight=0, minsize=0)
+
         # Sidebar
         self._create_sidebar(main_frame)
 
@@ -364,21 +370,6 @@ class CalculatorUI(ctk.CTk):
             btn.pack(fill="x", padx=12, pady=2)
             self.nav_buttons[mode] = btn
 
-        # Memory panel toggle button
-        mem_toggle_text = "🧠 Hide Memory" if self.memory_panel_visible else "🧠 Show Memory"
-        self.mem_toggle_btn = ctk.CTkButton(
-            sidebar,
-            text=mem_toggle_text,
-            font=ctk.CTkFont(size=13),
-            fg_color="transparent",
-            hover_color=theme["button_hover"],
-            text_color=theme["text_secondary"],
-            height=32,
-            corner_radius=6,
-            command=self._toggle_memory_panel
-        )
-        self.mem_toggle_btn.pack(fill="x", padx=12, pady=(15, 5))
-
         # Theme selector at bottom
         sep2 = ctk.CTkFrame(sidebar, height=1, fg_color=theme["border_color"])
         sep2.pack(fill="x", padx=20, pady=(20, 10))
@@ -433,10 +424,24 @@ class CalculatorUI(ctk.CTk):
         self._save_settings()
         self._setup_ui()
 
-    def _remove_memory_panel(self, parent):
-        """Remove memory panel from layout (used when hidden)."""
-        # Configure without memory panel column
-        parent.grid_columnconfigure(2, weight=0, minsize=0)
+    def _create_memory_toggle_button(self, parent):
+        """Create 'O' button to open memory panel when it's hidden."""
+        theme = THEMES[self.current_theme]
+        
+        # Toggle button in top-right corner
+        toggle_btn = ctk.CTkButton(
+            parent,
+            text="O",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color="transparent",
+            hover_color=theme["button_hover"],
+            text_color=theme["text_secondary"],
+            width=28,
+            height=28,
+            corner_radius=6,
+            command=self._toggle_memory_panel
+        )
+        toggle_btn.place(relx=1.0, y=10, anchor="ne", x=-15)
 
     def _update_nav_selection(self):
         """Update navigation button styles."""
@@ -642,6 +647,10 @@ class CalculatorUI(ctk.CTk):
         content.grid(row=0, column=1, sticky="nsew")
         content.grid_columnconfigure(0, weight=1)
         content.grid_rowconfigure(0, weight=1)
+
+        # If memory panel is hidden, show "O" toggle button in content area
+        if not self.memory_panel_visible:
+            self._create_memory_toggle_button(content)
 
         if self.current_mode == "standard":
             self._create_standard_view(content)
