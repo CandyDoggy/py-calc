@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#764ba2"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Main body -->
+  <rect x="48" y="24" width="160" height="208" rx="24" ry="24" fill="url(#bg)" filter="url(#shadow)"/>
+
+  <!-- Screen -->
+  <rect x="64" y="40" width="128" height="56" rx="8" ry="8" fill="url(#screen)"/>
+
+  <!-- Screen text -->
+  <text x="180" y="76" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#00d4ff" text-anchor="end">42.0</text>
+
+  <!-- Button row 1 -->
+  <rect x="64" y="112" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="100" y="112" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="136" y="112" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="172" y="112" width="20" height="24" rx="6" ry="6" fill="#00d4ff" opacity="0.9"/>
+
+  <!-- Button row 2 -->
+  <rect x="64" y="144" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="100" y="144" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="136" y="144" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="172" y="144" width="20" height="24" rx="6" ry="6" fill="#00d4ff" opacity="0.9"/>
+
+  <!-- Button row 3 -->
+  <rect x="64" y="176" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="100" y="176" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="136" y="176" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="172" y="176" width="20" height="24" rx="6" ry="6" fill="#00d4ff" opacity="0.9"/>
+
+  <!-- Button row 4 -->
+  <rect x="64" y="208" width="64" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="136" y="208" width="28" height="24" rx="6" ry="6" fill="#ffffff" opacity="0.9"/>
+  <rect x="172" y="208" width="20" height="24" rx="6" ry="6" fill="#00d4ff" opacity="0.9"/>
+</svg>

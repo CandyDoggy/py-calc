@@ -47,7 +47,7 @@ $Shortcut.TargetPath = $VenvPython
 $Shortcut.Arguments = "`"$PywPath`""
 $Shortcut.WorkingDirectory = $AppDir
 $Shortcut.Description = "Scientific Calculator"
-$Shortcut.IconLocation = "imageres.dll,-100"
+$Shortcut.IconLocation = Join-Path $AppDir "assets\logo.ico"
 $Shortcut.Save()
 
 Write-Host "========================================" -ForegroundColor Green
