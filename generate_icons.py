@@ -164,6 +164,32 @@ def draw_temperature(draw):
     draw.rectangle([14, 12, 18, 24], fill=(255, 255, 255, 255))
     draw.ellipse([14, 22, 18, 26], fill=(255, 255, 255, 255))
 
+def draw_memory_panel(draw):
+    """Memory panel toggle icon - circle with M."""
+    draw.ellipse([6, 6, 26, 26], fill=(96, 205, 255, 255))
+    try:
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 14)
+    except:
+        font = ImageFont.load_default()
+    draw.text((11, 8), "M", fill=(255, 255, 255, 255), font=font)
+
+def draw_logo(draw):
+    """Calculator logo - larger polished icon (64x64)."""
+    # Outer rounded rectangle
+    draw.rounded_rectangle([4, 4, 60, 60], radius=12, fill=(32, 32, 32, 255))
+    # Inner accent border
+    draw.rounded_rectangle([6, 6, 58, 58], radius=10, outline=(96, 205, 255, 255), width=2)
+    # Display area
+    draw.rounded_rectangle([12, 10, 52, 26], radius=4, fill=(96, 205, 255, 60))
+    # Display text line
+    draw.line([(18, 18), (46, 18)], fill=(96, 205, 255, 255), width=2)
+    # Button grid
+    for row in range(4):
+        for col in range(4):
+            x = 12 + col * 10
+            y = 30 + row * 7
+            draw.rounded_rectangle([x, y, x+7, y+5], radius=1, fill=(96, 205, 255, 200))
+
 def main():
     """Generate all icons."""
     # Sidebar icons
@@ -176,14 +202,27 @@ def main():
         ("icon_currency.png", draw_currency),
         ("icon_metric.png", draw_metric),
         ("icon_temperature.png", draw_temperature),
+        ("icon_memory_panel.png", draw_memory_panel),
     ]
-    
+
     print("Generating sidebar icons...")
     for filename, draw_func in sidebar_icons:
         try:
             create_icon(filename, draw_func)
         except Exception as e:
             print(f"Error creating {filename}: {e}")
+
+    # Calculator logo (64x64)
+    print("\nGenerating logo...")
+    try:
+        img = Image.new("RGBA", (64, 64), BG_COLOR)
+        draw = ImageDraw.Draw(img)
+        draw_logo(draw)
+        filepath = os.path.join(ASSETS_DIR, "assets", "logo.png")
+        img.save(filepath, "PNG")
+        print(f"Created: {filepath}")
+    except Exception as e:
+        print(f"Error creating logo: {e}")
     
     # Currency icons
     print("\nGenerating currency icons...")
@@ -206,6 +245,7 @@ def main():
     
     print(f"\nAll icons generated successfully!")
     print(f"  Sidebar icons: {len(sidebar_icons)}")
+    print(f"  Logo: logo.png (64x64)")
     print(f"  Currency icons: {created}")
 
 if __name__ == "__main__":

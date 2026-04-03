@@ -1,5 +1,41 @@
 # Patch Notes
 
+## Version 3.4.3 (April 3, 2026) - Icon Overhaul & Memory Toggle 🎨
+
+### New Features
+- **Calculator Logo**: New polished 64x64 logo icon with calculator design
+  - Dark background with accent blue border
+  - Display area with button grid
+  - Generated via `generate_icons.py`
+- **Memory Panel Toggle Icon**: New `icon_memory_panel.png` 
+  - Blue circle with "M" letter
+  - Used in both desktop app and web version
+- **Memory Toggle Button Redesigned** (Desktop):
+  - Moved from floating position in content area to sidebar bottom
+  - Now uses proper PNG icon instead of text "O"
+  - Better visual integration with sidebar theme
+  - 160x32px button matching sidebar style
+- **Web Version Toggle**: SVG icon for memory panel toggle
+  - Circle with "M" letter in SVG format
+  - Better sizing (36x36px with 20x20px icon)
+
+### Bug Fixes
+- 🐛 **Fixed `_create_sidebar`** - Now returns sidebar widget for proper toggle placement
+- 🐛 **Fixed memory toggle visibility** - Properly shown when memory panel is hidden
+- 🐛 **Fixed icon loading** - Better error handling for missing icon files
+- 🐛 **Fixed sidebar layout** - Toggle button now properly packed at sidebar bottom
+
+### Technical Changes
+- Added `draw_memory_panel()` function to `generate_icons.py`
+- Added `draw_logo()` function to `generate_icons.py` (64x64 logo)
+- Updated `_create_memory_toggle_button()` to load and use `icon_memory_panel.png`
+- Moved memory toggle button to sidebar instead of floating in content area
+- Added SVG memory icon for web version
+- Updated `generate_icons.py` output to include logo count
+- All icons regenerated via `venv/bin/python generate_icons.py`
+
+---
+
 ## Version 3.4.2 (April 3, 2026) - Memory Panel & Bug Fixes 🧠
 
 ### New Features
@@ -374,4 +410,4 @@ Found a bug? Please include:
 ---
 
 **Last Updated**: April 3, 2026
-**Current Version**: 3.4.2
+**Current Version**: 3.4.3

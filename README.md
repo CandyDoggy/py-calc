@@ -6,7 +6,7 @@ A modern, feature-rich calculator application built with **Python** and **Custom
 ![CustomTkinter](https://img.shields.io/badge/CustomTkinter-5.2+-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
-![Version](https://img.shields.io/badge/v3.4.2-Memory%20Panel-60cdff)
+![Version](https://img.shields.io/badge/v3.4.3-Icon%20Overhaul-60cdff)
 
 🌐 **[Try it Online →](https://candydoggy.github.io/py-calc-cqwen/)**
 
@@ -271,7 +271,15 @@ chmod +x run.sh
 
 See [PATCH_NOTES.md](PATCH_NOTES.md) for detailed version history.
 
-### Latest: v3.4.2 (2026) - Memory Panel & Bug Fixes
+### Latest: v3.4.3 (2026) - Icon Overhaul & Memory Toggle
+- 🎨 New calculator logo (64x64 polished icon)
+- Memory panel toggle icon with "M" circle design
+- Moved memory toggle to sidebar bottom (instead of floating)
+- SVG icon for web version memory toggle
+- Fixed sidebar layout and icon loading
+- 4 bug fixes total
+
+### v3.4.2 (2026) - Memory Panel & Bug Fixes
 - 🧠 Memory panel with right sidebar (✕ to close, O to open)
 - Clickable memory entries with individual delete buttons
 - Fixed keyboard input preventing browser shortcuts

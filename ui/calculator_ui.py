@@ -312,7 +312,11 @@ class CalculatorUI(ctk.CTk):
             main_frame.grid_columnconfigure(2, weight=0, minsize=0)
 
         # Sidebar
-        self._create_sidebar(main_frame)
+        sidebar = self._create_sidebar(main_frame)
+
+        # Memory panel toggle button in sidebar
+        if not self.memory_panel_visible:
+            self._create_memory_toggle_button(sidebar)
 
         # Content area
         self._create_content_area(main_frame)
@@ -322,7 +326,7 @@ class CalculatorUI(ctk.CTk):
             self._create_memory_panel(main_frame)
 
     def _create_sidebar(self, parent):
-        """Create Windows 11-style navigation sidebar."""
+        """Create Windows 11-style navigation sidebar. Returns the sidebar widget."""
         theme = THEMES[self.current_theme]
 
         sidebar = ctk.CTkFrame(parent, width=200, fg_color=theme["sidebar_bg"])
@@ -398,6 +402,8 @@ class CalculatorUI(ctk.CTk):
         # Highlight current mode
         self._update_nav_selection()
 
+        return sidebar
+
     def _create_nav_button(self, parent, icon, label, mode):
         """Create a navigation button for the sidebar."""
         theme = THEMES[self.current_theme]
@@ -425,23 +431,36 @@ class CalculatorUI(ctk.CTk):
         self._setup_ui()
 
     def _create_memory_toggle_button(self, parent):
-        """Create 'O' button to open memory panel when it's hidden."""
+        """Create memory panel toggle button with icon."""
         theme = THEMES[self.current_theme]
-        
-        # Toggle button in top-right corner
+        assets_dir = os.path.join(self.base_dir, "assets")
+
+        # Load memory panel icon
+        icon = None
+        try:
+            icon_path = os.path.join(assets_dir, "icon_memory_panel.png")
+            if os.path.exists(icon_path):
+                pil_img = Image.open(icon_path).resize((18, 18), Image.Resampling.LANCZOS)
+                icon = ctk.CTkImage(light_image=pil_img, dark_image=pil_img, size=(18, 18))
+        except Exception:
+            pass
+
+        # Toggle button - positioned below theme selector in sidebar
         toggle_btn = ctk.CTkButton(
             parent,
-            text="O",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            fg_color="transparent",
+            text="",
+            image=icon,
+            font=ctk.CTkFont(size=14),
+            fg_color=theme["button_bg"],
             hover_color=theme["button_hover"],
             text_color=theme["text_secondary"],
-            width=28,
-            height=28,
-            corner_radius=6,
+            width=160,
+            height=32,
+            corner_radius=8,
             command=self._toggle_memory_panel
         )
-        toggle_btn.place(relx=1.0, y=10, anchor="ne", x=-15)
+        # Place it at the bottom of the sidebar
+        toggle_btn.pack(side="bottom", padx=20, pady=(0, 15))
 
     def _update_nav_selection(self):
         """Update navigation button styles."""
