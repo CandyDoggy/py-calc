@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator - Py-Calc-CQwen</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h1 class="app-title">Calculator</h1>
+            <div class="separator"></div>
+            <nav class="nav-buttons">
+                <button class="nav-btn active" data-mode="standard">
+                    <span class="nav-icon">🔢</span>
+                    <span>Standard</span>
+                </button>
+                <button class="nav-btn" data-mode="scientific">
+                    <span class="nav-icon">🔬</span>
+                    <span>Scientific</span>
+                </button>
+                <button class="nav-btn" data-mode="programmer">
+                    <span class="nav-icon">💻</span>
+                    <span>Programmer</span>
+                </button>
+                <button class="nav-btn" data-mode="minimalist">
+                    <span class="nav-icon">✨</span>
+                    <span>Minimalist</span>
+                </button>
+                <button class="nav-btn" data-mode="currency">
+                    <span class="nav-icon">💱</span>
+                    <span>Currency</span>
+                </button>
+                <button class="nav-btn" data-mode="metric">
+                    <span class="nav-icon">📏</span>
+                    <span>Metric/Imperial</span>
+                </button>
+                <button class="nav-btn" data-mode="temperature">
+                    <span class="nav-icon">🌡️</span>
+                    <span>Temperature</span>
+                </button>
+            </nav>
+            <div class="separator"></div>
+            <div class="theme-selector">
+                <label>Theme:</label>
+                <select id="theme-select">
+                    <option value="fluent-dark">Fluent Dark</option>
+                    <option value="fluent-light">Fluent Light</option>
+                    <option value="midnight-blue">Midnight Blue</option>
+                    <option value="forest-green">Forest Green</option>
+                    <option value="sunset-orange">Sunset Orange</option>
+                    <option value="royal-purple">Royal Purple</option>
+                    <option value="rose-gold">Rose Gold</option>
+                    <option value="arctic-white">Arctic White</option>
+                    <option value="cyber-yellow">Cyber Yellow</option>
+                </select>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Standard Mode -->
+            <div class="mode-view active" id="standard-mode">
+                <div class="display">
+                    <div class="expression" id="expr"></div>
+                    <div class="result" id="result">0</div>
+                </div>
+                <div class="buttons-grid">
+                    <button class="mem-btn" data-action="MC">MC</button>
+                    <button class="mem-btn" data-action="MR">MR</button>
+                    <button class="mem-btn" data-action="M+">M+</button>
+                    <button class="mem-btn" data-action="M-">M-</button>
+                    <button class="mem-btn" data-action="MS">MS</button>
+
+                    <button class="btn" data-action="C">C</button>
+                    <button class="btn" data-action="backspace">⌫</button>
+                    <button class="btn" data-action="%">%</button>
+                    <button class="btn operator" data-action="/">÷</button>
+
+                    <button class="btn" data-action="7">7</button>
+                    <button class="btn" data-action="8">8</button>
+                    <button class="btn" data-action="9">9</button>
+                    <button class="btn operator" data-action="*">×</button>
+
+                    <button class="btn" data-action="4">4</button>
+                    <button class="btn" data-action="5">5</button>
+                    <button class="btn" data-action="6">6</button>
+                    <button class="btn operator" data-action="-">−</button>
+
+                    <button class="btn" data-action="1">1</button>
+                    <button class="btn" data-action="2">2</button>
+                    <button class="btn" data-action="3">3</button>
+                    <button class="btn operator" data-action="+">+</button>
+
+                    <button class="btn" data-action="negate">±</button>
+                    <button class="btn" data-action="0">0</button>
+                    <button class="btn" data-action=".">.</button>
+                    <button class="btn equals" data-action="=">=</button>
+                </div>
+            </div>
+
+            <!-- Scientific Mode -->
+            <div class="mode-view" id="scientific-mode">
+                <div class="display">
+                    <div class="expression" id="sci-expr"></div>
+                    <div class="result" id="sci-result">0</div>
+                </div>
+                <div class="buttons-grid scientific">
+                    <button class="mem-btn" data-action="MC">MC</button>
+                    <button class="mem-btn" data-action="MR">MR</button>
+                    <button class="mem-btn" data-action="M+">M+</button>
+                    <button class="mem-btn" data-action="M-">M-</button>
+                    <button class="mem-btn" data-action="MS">MS</button>
+
+                    <button class="btn sci-btn" data-action="sin">sin</button>
+                    <button class="btn sci-btn" data-action="cos">cos</button>
+                    <button class="btn sci-btn" data-action="tan">tan</button>
+                    <button class="btn sci-btn" data-action="log">log</button>
+                    <button class="btn sci-btn" data-action="ln">ln</button>
+
+                    <button class="btn sci-btn" data-action="asin">asin</button>
+                    <button class="btn sci-btn" data-action="acos">acos</button>
+                    <button class="btn sci-btn" data-action="atan">atan</button>
+                    <button class="btn sci-btn" data-action="sqrt">√</button>
+                    <button class="btn sci-btn" data-action="pow2">x²</button>
+
+                    <button class="btn sci-btn" data-action="pi">π</button>
+                    <button class="btn sci-btn" data-action="e">e</button>
+                    <button class="btn sci-btn" data-action="(">(</button>
+                    <button class="btn sci-btn" data-action=")">)</button>
+                    <button class="btn sci-btn" data-action="^">^</button>
+
+                    <button class="btn" data-action="C">C</button>
+                    <button class="btn" data-action="backspace">⌫</button>
+                    <button class="btn" data-action="%">%</button>
+                    <button class="btn operator" data-action="/">÷</button>
+                    <button class="btn operator" data-action="*">×</button>
+
+                    <button class="btn" data-action="7">7</button>
+                    <button class="btn" data-action="8">8</button>
+                    <button class="btn" data-action="9">9</button>
+                    <button class="btn operator" data-action="-">−</button>
+                    <button class="btn operator" data-action="+">+</button>
+
+                    <button class="btn" data-action="4">4</button>
+                    <button class="btn" data-action="5">5</button>
+                    <button class="btn" data-action="6">6</button>
+                    <button class="btn sci-btn" data-action="1/x">1/x</button>
+                    <button class="btn equals" data-action="=">=</button>
+
+                    <button class="btn" data-action="1">1</button>
+                    <button class="btn" data-action="2">2</button>
+                    <button class="btn" data-action="3">3</button>
+                    <button class="btn sci-btn" data-action="exp">exp</button>
+
+                    <button class="btn" data-action="0" style="grid-column: span 2;">0</button>
+                    <button class="btn" data-action=".">.</button>
+                    <button class="btn" data-action="negate">±</button>
+                </div>
+            </div>
+
+            <!-- Programmer Mode -->
+            <div class="mode-view" id="programmer-mode">
+                <div class="display">
+                    <div class="expression" id="prog-expr"></div>
+                    <div class="result" id="prog-result">0</div>
+                    <div class="base-indicators">
+                        <div id="hex-display">HEX: 0</div>
+                        <div id="dec-display">DEC: 0</div>
+                        <div id="oct-display">OCT: 0</div>
+                        <div id="bin-display">BIN: 0</div>
+                    </div>
+                </div>
+                <div class="buttons-grid programmer">
+                    <button class="mem-btn" data-action="MC">MC</button>
+                    <button class="mem-btn" data-action="MR">MR</button>
+                    <button class="mem-btn" data-action="M+">M+</button>
+                    <button class="mem-btn" data-action="M-">M-</button>
+                    <button class="mem-btn" data-action="MS">MS</button>
+
+                    <button class="btn prog-btn" data-action="AND">AND</button>
+                    <button class="btn prog-btn" data-action="OR">OR</button>
+                    <button class="btn prog-btn" data-action="XOR">XOR</button>
+                    <button class="btn prog-btn" data-action="NOT">NOT</button>
+                    <button class="btn prog-btn" data-action="SHL">SHL</button>
+
+                    <button class="btn prog-btn" data-action="A">A</button>
+                    <button class="btn prog-btn" data-action="B">B</button>
+                    <button class="btn prog-btn" data-action="C">C</button>
+                    <button class="btn prog-btn" data-action="D">D</button>
+                    <button class="btn prog-btn" data-action="E">E</button>
+
+                    <button class="btn prog-btn" data-action="F">F</button>
+                    <button class="btn" data-action="7">7</button>
+                    <button class="btn" data-action="8">8</button>
+                    <button class="btn" data-action="9">9</button>
+                    <button class="btn operator" data-action="/">÷</button>
+
+                    <button class="btn" data-action="4">4</button>
+                    <button class="btn" data-action="5">5</button>
+                    <button class="btn" data-action="6">6</button>
+                    <button class="btn operator" data-action="*">×</button>
+                    <button class="btn operator" data-action="-">−</button>
+
+                    <button class="btn" data-action="1">1</button>
+                    <button class="btn" data-action="2">2</button>
+                    <button class="btn" data-action="3">3</button>
+                    <button class="btn operator" data-action="+">+</button>
+                    <button class="btn equals" data-action="=">=</button>
+
+                    <button class="btn" data-action="0">0</button>
+                    <button class="btn" data-action=".">.</button>
+                    <button class="btn" data-action="backspace">⌫</button>
+                    <button class="btn" data-action="clear">⌧</button>
+                    <button class="btn" data-action="%">%</button>
+                </div>
+            </div>
+
+            <!-- Minimalist Mode -->
+            <div class="mode-view" id="minimalist-mode">
+                <div class="display minimalist">
+                    <div class="result" id="min-result">0</div>
+                    <div class="expression" id="min-expr"></div>
+                </div>
+                <div class="buttons-grid minimalist">
+                    <button class="btn min-btn" data-action="C">C</button>
+                    <button class="btn min-btn" data-action="backspace">⌫</button>
+                    <button class="btn min-btn" data-action="%">%</button>
+                    <button class="btn min-btn operator" data-action="/">÷</button>
+
+                    <button class="btn min-btn" data-action="7">7</button>
+                    <button class="btn min-btn" data-action="8">8</button>
+                    <button class="btn min-btn" data-action="9">9</button>
+                    <button class="btn min-btn operator" data-action="*">×</button>
+
+                    <button class="btn min-btn" data-action="4">4</button>
+                    <button class="btn min-btn" data-action="5">5</button>
+                    <button class="btn min-btn" data-action="6">6</button>
+                    <button class="btn min-btn operator" data-action="-">−</button>
+
+                    <button class="btn min-btn" data-action="1">1</button>
+                    <button class="btn min-btn" data-action="2">2</button>
+                    <button class="btn min-btn" data-action="3">3</button>
+                    <button class="btn min-btn operator" data-action="+">+</button>
+
+                    <button class="btn min-btn" data-action="negate">±</button>
+                    <button class="btn min-btn" data-action="0">0</button>
+                    <button class="btn min-btn" data-action=".">.</button>
+                    <button class="btn min-btn equals" data-action="=">=</button>
+                </div>
+            </div>
+
+            <!-- Currency Mode -->
+            <div class="mode-view" id="currency-mode">
+                <h2 class="mode-title">Currency Converter</h2>
+                <div class="currency-input-group">
+                    <label>Amount:</label>
+                    <input type="number" id="currency-amount" value="1" min="0" step="any">
+                </div>
+                <div class="currency-selector">
+                    <div class="currency-display" id="from-currency">
+                        <span class="currency-code">USD</span>
+                    </div>
+                    <button class="swap-btn" id="swap-currencies">⇅</button>
+                    <div class="currency-display" id="to-currency">
+                        <span class="currency-code">EUR</span>
+                    </div>
+                </div>
+                <div class="currency-result" id="currency-result"></div>
+                <div class="search-container">
+                    <input type="text" id="currency-search" placeholder="🔍 Search currencies...">
+                </div>
+                <div class="currency-list" id="currency-list"></div>
+                <div class="currency-select-mode">
+                    <label>
+                        <input type="radio" name="currency-select-mode" value="from" checked> From Currency
+                    </label>
+                    <label>
+                        <input type="radio" name="currency-select-mode" value="to"> To Currency
+                    </label>
+                </div>
+            </div>
+
+            <!-- Metric/Imperial Mode -->
+            <div class="mode-view" id="metric-mode">
+                <h2 class="mode-title">Metric/Imperial Converter</h2>
+                <div class="converter-type-selector">
+                    <select id="metric-type">
+                        <option value="length">Length</option>
+                        <option value="weight">Weight</option>
+                        <option value="volume">Volume</option>
+                        <option value="speed">Speed</option>
+                        <option value="area">Area</option>
+                        <option value="time">Time</option>
+                        <option value="data">Data</option>
+                        <option value="energy">Energy</option>
+                        <option value="pressure">Pressure</option>
+                    </select>
+                </div>
+                <div class="converter-container">
+                    <div class="converter-side">
+                        <label id="metric-from-label">Meters (m)</label>
+                        <input type="number" id="metric-from-value" value="1" step="any">
+                    </div>
+                    <button class="swap-btn" id="swap-metric">⇅</button>
+                    <div class="converter-side">
+                        <label id="metric-to-label">Feet (ft)</label>
+                        <input type="number" id="metric-to-value" readonly>
+                    </div>
+                </div>
+                <div class="unit-list-container">
+                    <div class="unit-list" id="metric-unit-list"></div>
+                </div>
+            </div>
+
+            <!-- Temperature Mode -->
+            <div class="mode-view" id="temperature-mode">
+                <h2 class="mode-title">Temperature Converter</h2>
+                <div class="temperature-container">
+                    <div class="temp-input-group">
+                        <label>Celsius (°C)</label>
+                        <input type="number" id="temp-celsius" step="any">
+                    </div>
+                    <div class="temp-input-group">
+                        <label>Fahrenheit (°F)</label>
+                        <input type="number" id="temp-fahrenheit" step="any">
+                    </div>
+                    <div class="temp-input-group">
+                        <label>Kelvin (K)</label>
+                        <input type="number" id="temp-kelvin" step="any">
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="math.js"></script>
+    <script src="currencies.js"></script>
+    <script src="converter.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
