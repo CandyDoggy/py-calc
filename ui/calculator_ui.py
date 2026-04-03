@@ -53,45 +53,6 @@ THEMES = {
         "text_secondary": "#b0b0b0",
         "border_color": "#505050",
     },
-    "minimalist": {
-        "name": "Minimalist",
-        "bg_color": "#0d1117",
-        "sidebar_bg": "#0a0e10",
-        "card_bg": "#161b22",
-        "button_bg": "#21262d",
-        "button_hover": "#30363d",
-        "accent_color": "#58a6ff",
-        "accent_hover": "#79b8ff",
-        "text_color": "#ffffff",
-        "text_secondary": "#8b949e",
-        "border_color": "#30363d",
-    },
-    "modern": {
-        "name": "Modern",
-        "bg_color": "#000000",
-        "sidebar_bg": "#0a0a0a",
-        "card_bg": "#111111",
-        "button_bg": "#1a1a1a",
-        "button_hover": "#2a2a2a",
-        "accent_color": "#a855f7",
-        "accent_hover": "#b975f9",
-        "text_color": "#ffffff",
-        "text_secondary": "#888888",
-        "border_color": "#333333",
-    },
-    "programmer": {
-        "name": "Programmer",
-        "bg_color": "#0f0f1a",
-        "sidebar_bg": "#0a0a14",
-        "card_bg": "#1a1a2e",
-        "button_bg": "#2d2d44",
-        "button_hover": "#3d3d5c",
-        "accent_color": "#7c3aed",
-        "accent_hover": "#8b5cf6",
-        "text_color": "#ffffff",
-        "text_secondary": "#9ca3af",
-        "border_color": "#3d3d5c",
-    },
 }
 
 # Currency exchange rates (base: USD)
@@ -254,6 +215,9 @@ class CalculatorUI(ctk.CTk):
         nav_items = [
             ("standard", "🔢", "Standard"),
             ("scientific", "🔬", "Scientific"),
+            ("programmer", "💻", "Programmer"),
+            ("minimalist", "✨", "Minimalist"),
+            ("modern", "🎨", "Modern"),
             ("currency", "💱", "Currency"),
         ]
 
@@ -342,6 +306,12 @@ class CalculatorUI(ctk.CTk):
             self._create_standard_view(content)
         elif self.current_mode == "scientific":
             self._create_scientific_view(content)
+        elif self.current_mode == "programmer":
+            self._create_programmer_view(content)
+        elif self.current_mode == "minimalist":
+            self._create_minimalist_view(content)
+        elif self.current_mode == "modern":
+            self._create_modern_view(content)
         elif self.current_mode == "currency":
             self._create_currency_view(content)
 
@@ -636,6 +606,133 @@ class CalculatorUI(ctk.CTk):
         self.currency_to_var.set(from_val)
         self._on_currency_change()
 
+    def _create_programmer_view(self, parent):
+        """Create programmer calculator view with base conversion."""
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_rowconfigure(1, weight=3)
+
+        # Display with base indicators
+        self._create_display(parent, row=0)
+
+        # Base indicator labels
+        theme = THEMES[self.current_theme]
+        base_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        base_frame.grid(row=0, column=0, sticky="sw", padx=20, pady=(0, 5))
+
+        self.base_hex_label = ctk.CTkLabel(
+            base_frame, text="HEX: 0",
+            font=ctk.CTkFont(size=11),
+            text_color=theme["text_secondary"]
+        )
+        self.base_hex_label.pack(anchor="w")
+
+        self.base_dec_label = ctk.CTkLabel(
+            base_frame, text="DEC: 0",
+            font=ctk.CTkFont(size=11),
+            text_color=theme["text_secondary"]
+        )
+        self.base_dec_label.pack(anchor="w")
+
+        self.base_oct_label = ctk.CTkLabel(
+            base_frame, text="OCT: 0",
+            font=ctk.CTkFont(size=11),
+            text_color=theme["text_secondary"]
+        )
+        self.base_oct_label.pack(anchor="w")
+
+        self.base_bin_label = ctk.CTkLabel(
+            base_frame, text="BIN: 0",
+            font=ctk.CTkFont(size=11),
+            text_color=theme["text_secondary"]
+        )
+        self.base_bin_label.pack(anchor="w")
+
+        # Buttons
+        buttons_frame = ctk.CTkFrame(parent, fg_color=theme["bg_color"])
+        buttons_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=(0, 20))
+        for i in range(5):
+            buttons_frame.grid_columnconfigure(i, weight=1)
+        for i in range(7):
+            buttons_frame.grid_rowconfigure(i, weight=1)
+
+        # Memory row
+        self._create_memory_buttons(buttons_frame, row=0)
+
+        # Programmer layout with bitwise ops
+        buttons_config = [
+            [("AND", 1, 0), ("OR", 1, 1), ("XOR", 1, 2), ("NOT", 1, 3), ("SHL", 1, 4)],
+            [("A", 2, 0), ("B", 2, 1), ("C", 2, 2), ("D", 2, 3), ("E", 2, 4)],
+            [("F", 3, 0), ("7", 3, 1), ("8", 3, 2), ("9", 3, 3), ("÷", 3, 4)],
+            [("4", 4, 0), ("5", 4, 1), ("6", 4, 2), ("×", 4, 3), ("-", 4, 4)],
+            [("1", 5, 0), ("2", 5, 1), ("3", 5, 2), ("+", 5, 3), ("=", 5, 4)],
+            [("0", 6, 0), (".", 6, 1), ("⌫", 6, 2), ("C", 6, 3), ("%", 6, 4)],
+        ]
+
+        for row_data in buttons_config:
+            for text, row, col in row_data:
+                self._create_fluent_button(buttons_frame, text, row, col)
+
+    def _create_minimalist_view(self, parent):
+        """Create minimalist calculator view - clean and simple."""
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_rowconfigure(1, weight=3)
+
+        # Display
+        self._create_display(parent, row=0)
+
+        # Buttons
+        buttons_frame = ctk.CTkFrame(parent, fg_color=THEMES[self.current_theme]["bg_color"])
+        buttons_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=(0, 20))
+        buttons_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
+        for i in range(6):
+            buttons_frame.grid_rowconfigure(i, weight=1)
+
+        # Minimalist layout - only essentials
+        buttons_config = [
+            [("C", 0, 0), ("⌫", 0, 1), ("%", 0, 2), ("÷", 0, 3)],
+            [("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("×", 1, 3)],
+            [("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("-", 2, 3)],
+            [("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("+", 3, 3)],
+            [("±", 4, 0), ("0", 4, 1), (".", 4, 2), ("=", 4, 3)],
+        ]
+
+        for row_data in buttons_config:
+            for text, row, col in row_data:
+                self._create_fluent_button(buttons_frame, text, row, col)
+
+    def _create_modern_view(self, parent):
+        """Create modern calculator view with extra functions."""
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_rowconfigure(1, weight=3)
+
+        # Display
+        self._create_display(parent, row=0)
+
+        # Buttons
+        buttons_frame = ctk.CTkFrame(parent, fg_color=THEMES[self.current_theme]["bg_color"])
+        buttons_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=(0, 20))
+        for i in range(5):
+            buttons_frame.grid_columnconfigure(i, weight=1)
+        for i in range(7):
+            buttons_frame.grid_rowconfigure(i, weight=1)
+
+        # Memory row
+        self._create_memory_buttons(buttons_frame, row=0)
+
+        # Modern layout with extra functions
+        buttons_config = [
+            [("x²", 1, 0), ("√", 1, 1), ("^", 1, 2), ("π", 1, 3), ("e", 1, 4)],
+            [("sin", 2, 0), ("cos", 2, 1), ("tan", 2, 2), ("log", 2, 3), ("ln", 2, 4)],
+            [("7", 3, 0), ("8", 3, 1), ("9", 3, 2), ("÷", 3, 3), ("×", 3, 4)],
+            [("4", 4, 0), ("5", 4, 1), ("6", 4, 2), ("-", 4, 3), ("+", 4, 4)],
+            [("1", 5, 0), ("2", 5, 1), ("3", 5, 2), ("C", 5, 3), ("=", 5, 4)],
+            [("0", 6, 0), (".", 6, 1), ("⌫", 6, 2), ("%", 6, 3)],
+        ]
+
+        for row_data in buttons_config:
+            for text, row, col in row_data:
+                self._create_fluent_button(buttons_frame, text, row, col)
+
     def _on_button_click(self, text: str):
         """Handle button click."""
         if text == "=":
@@ -678,10 +775,15 @@ class CalculatorUI(ctk.CTk):
             self._append_function("ln")
         elif text == "exp":
             self._append_function("exp")
+        elif text in ["AND", "OR", "XOR", "NOT", "SHL"]:
+            self._append_bitwise(text)
+        elif text in ["A", "B", "C", "D", "E", "F"]:
+            self._append_text(text.lower())
         else:
             self._append_text(text)
 
         self._update_display()
+        self._update_base_indicators()
 
     def _append_text(self, text: str):
         """Append text to expression."""
@@ -759,6 +861,28 @@ class CalculatorUI(ctk.CTk):
         """Update the display labels."""
         self.expr_label.configure(text=self.current_expression)
         self.result_label.configure(text=self.current_result if self.current_result else "0")
+
+    def _append_bitwise(self, op: str):
+        """Append bitwise operator to expression."""
+        ops = {"AND": "&", "OR": "|", "XOR": "^", "NOT": "~", "SHL": "<<"}
+        if self.current_expression:
+            self.current_expression += f" {ops[op]} "
+        elif self.current_result != "0":
+            self.current_expression = f"{self.current_result} {ops[op]} "
+
+    def _update_base_indicators(self):
+        """Update HEX/DEC/OCT/BIN labels in programmer mode."""
+        if self.current_mode != "programmer":
+            return
+        try:
+            val = int(float(self.current_result)) if self.current_result not in ["0", "Error", ""] else 0
+        except (ValueError, TypeError):
+            val = 0
+
+        self.base_hex_label.configure(text=f"HEX: {hex(val).upper()}")
+        self.base_dec_label.configure(text=f"DEC: {val}")
+        self.base_oct_label.configure(text=f"OCT: {oct(val)}")
+        self.base_bin_label.configure(text=f"BIN: {bin(val)}")
 
     # ==================== MEMORY SYSTEM ====================
 
