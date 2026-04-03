@@ -1,5 +1,50 @@
 # Patch Notes
 
+## Version 3.4.1 (April 3, 2026) - Web Version Release 🌐
+
+### Major Release
+- **Web Version Available**: Calculator now accessible online via GitHub Pages
+  - URL: https://candydoggy.github.io/py-calc-cqwen/
+  - No installation required - works directly in browser
+  - Cross-platform by default (Windows, macOS, Linux, iOS, Android)
+
+### New Features
+- ✅ **All 7 Calculator Modes**: Standard, Scientific, Programmer, Minimalist, Currency, Metric/Imperial, Temperature
+- ✅ **9 Themes**: Fluent Dark, Fluent Light, Midnight Blue, Forest Green, Sunset Orange, Royal Purple, Rose Gold, Arctic White, Cyber Yellow
+- ✅ **Responsive Design**: Optimized for both desktop and mobile screens
+- ✅ **Keyboard Support**: Direct keyboard input for standard calculator mode
+- ✅ **Currency Converter**: 53 currencies with search and swap functionality
+- ✅ **Metric/Imperial Converter**: 9 conversion types (Length, Weight, Volume, Speed, Area, Time, Data, Energy, Pressure)
+- ✅ **Temperature Converter**: Celsius, Fahrenheit, Kelvin
+- ✅ **LocalStorage Persistence**: Theme and memory settings saved in browser
+
+### Technical Changes
+- Created full HTML/CSS/JavaScript implementation
+- Implemented JavaScript math engine with scientific functions
+- Added GitHub Actions workflow for automatic deployment
+- Configured GitHub Pages for hosting
+- All currency data ported to web version
+- All metric/imperial conversion factors ported
+
+### File Structure
+```
+web/
+├── index.html          # Main calculator interface
+├── styles.css          # All 9 themes + responsive design
+├── math.js             # JavaScript math engine
+├── currencies.js       # Currency data (53 currencies)
+├── converter.js        # Metric/Imperial + Temperature converters
+├── app.js              # Main application logic
+└── _config.yml         # GitHub Pages configuration
+```
+
+### Documentation Updates
+- Updated README.md with web version link
+- Added web version features and usage instructions
+- Updated QWEN.md with deployment information
+
+---
+
 ## Version 3.3.0 (April 3, 2026) - Visual Overhaul & Expanded Converters 🎨
 
 ### Visual Enhancements
@@ -299,4 +344,4 @@ Found a bug? Please include:
 ---
 
 **Last Updated**: April 3, 2026
-**Current Version**: 3.3.0
+**Current Version**: 3.4.1

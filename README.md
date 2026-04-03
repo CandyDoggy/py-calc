@@ -6,8 +6,22 @@ A modern, feature-rich calculator application built with **Python** and **Custom
 ![CustomTkinter](https://img.shields.io/badge/CustomTkinter-5.2+-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
+![Version](https://img.shields.io/badge/v3.4.1-Web%20Enabled-60cdff)
 
-![Calculator](https://via.placeholder.com/800x450/202020/60cdff?text=Calculator+v3.3)
+🌐 **[Try it Online →](https://candydoggy.github.io/py-calc-cqwen/)**
+
+---
+
+## 🌐 Web Version
+
+Access the calculator directly in your browser at: **https://candydoggy.github.io/py-calc-cqwen/**
+
+The web version includes all features of the desktop app with no installation required:
+- ✅ All 7 calculator modes
+- ✅ 9 beautiful themes
+- ✅ Responsive design for mobile and desktop
+- ✅ Keyboard support
+- ✅ Cross-platform compatibility
 
 ---
 
