@@ -100,6 +100,12 @@ class Calculator:
         if len(self.history) > self.max_history:
             self.history.pop(0)
     
+    def get_last_calculation(self) -> tuple:
+        """Get the most recent calculation."""
+        if self.history:
+            return self.history[-1]
+        return None
+    
     def get_history(self) -> list:
         """Get calculation history."""
         return self.history.copy()
