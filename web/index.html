@@ -60,7 +60,10 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="content">
+        <main class="content" id="main-content">
+            <!-- Memory panel toggle button (shown when panel is hidden) -->
+            <button class="memory-toggle-btn" id="memory-toggle-btn" title="Open Memory Panel">O</button>
+
             <!-- Standard Mode -->
             <div class="mode-view active" id="standard-mode">
                 <div class="display">
@@ -334,6 +337,19 @@
                 </div>
             </div>
         </main>
+
+        <!-- Memory Panel (right sidebar) -->
+        <aside class="memory-panel" id="memory-panel">
+            <div class="memory-panel-header">
+                <h2 class="memory-panel-title">Memory</h2>
+                <button class="memory-close-btn" id="memory-close-btn" title="Close Memory Panel">✕</button>
+            </div>
+            <div class="separator"></div>
+            <div class="memory-list" id="memory-list">
+                <div class="memory-empty">No saved values<br><br>Use MS to save<br>the current value</div>
+            </div>
+            <button class="memory-clear-btn" id="memory-clear-btn">Clear All</button>
+        </aside>
     </div>
 
     <script src="math.js"></script>

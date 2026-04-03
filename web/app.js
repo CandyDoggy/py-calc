@@ -27,11 +27,13 @@ class CalculatorApp {
     init() {
         this.bindEvents();
         this.applyTheme(this.currentTheme);
+        this.loadMemoryPanelState();
         this.switchMode('standard');
         this.buildCurrencyList();
         this.buildMetricUnitList();
         this.updateCurrencyConversion();
         this.updateMetricConversion();
+        this.refreshMemoryDisplay();
     }
 
     bindEvents() {
@@ -49,12 +51,25 @@ class CalculatorApp {
             this.saveTheme();
         });
 
-        // Calculator buttons
+        // Calculator buttons (all modes)
         document.querySelectorAll('.btn, .mem-btn, .min-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const action = e.target.dataset.action;
                 this.handleButtonPress(action);
             });
+        });
+
+        // Memory panel toggle
+        document.getElementById('memory-close-btn').addEventListener('click', () => {
+            this.hideMemoryPanel();
+        });
+
+        document.getElementById('memory-toggle-btn').addEventListener('click', () => {
+            this.showMemoryPanel();
+        });
+
+        document.getElementById('memory-clear-btn').addEventListener('click', () => {
+            this.clearAllMemory();
         });
 
         // Currency converter
@@ -110,22 +125,33 @@ class CalculatorApp {
 
         // Keyboard support
         document.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT') return;
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             
             const key = e.key;
             if (/^[0-9.]$/.test(key)) {
+                e.preventDefault();
                 this.handleButtonPress(key);
             } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                e.preventDefault();
                 this.handleButtonPress(key);
             } else if (key === 'Enter' || key === '=') {
                 e.preventDefault();
                 this.handleButtonPress('=');
             } else if (key === 'Backspace') {
+                e.preventDefault();
                 this.handleButtonPress('backspace');
             } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                e.preventDefault();
                 this.handleButtonPress('C');
             } else if (key === '%') {
+                e.preventDefault();
                 this.handleButtonPress('%');
+            } else if (key === '(' || key === ')') {
+                e.preventDefault();
+                this.handleButtonPress(key);
+            } else if (key === '^') {
+                e.preventDefault();
+                this.handleButtonPress('^');
             }
         });
     }
@@ -189,6 +215,7 @@ class CalculatorApp {
                     if (this.currentExpression) {
                         this.currentResult = this.mathEngine.evaluate(this.currentExpression);
                         this.lastResult = parseFloat(this.currentResult);
+                        this.currentExpression = this.currentResult;
                     }
                 } catch (error) {
                     this.currentResult = 'Error';
@@ -200,14 +227,20 @@ class CalculatorApp {
                     if (this.currentExpression.startsWith('-')) {
                         this.currentExpression = this.currentExpression.substring(1);
                     } else {
-                        this.currentExpression = '-' + this.currentExpression;
+                        this.currentExpression = '(' + this.currentExpression + ')';
+                        if (this.currentExpression.startsWith('(-')) {
+                            this.currentExpression = this.currentExpression.substring(1);
+                        } else {
+                            this.currentExpression = '-' + this.currentExpression;
+                        }
                     }
-                } else if (this.currentResult !== '0') {
+                } else if (this.currentResult !== '0' && this.currentResult !== 'Error') {
                     if (this.currentResult.startsWith('-')) {
                         this.currentResult = this.currentResult.substring(1);
                     } else {
                         this.currentResult = '-' + this.currentResult;
                     }
+                    this.currentExpression = this.currentResult;
                 }
                 break;
 
@@ -217,6 +250,7 @@ class CalculatorApp {
             case 'M-':
             case 'MS':
                 this.handleMemoryAction(action);
+                this.refreshMemoryDisplay();
                 break;
 
             default:
@@ -225,7 +259,7 @@ class CalculatorApp {
         }
 
         // Update display
-        exprElement.textContent = this.currentExpression;
+        exprElement.textContent = this.currentExpression || '';
         resultElement.textContent = this.currentResult || '0';
     }
 
@@ -248,6 +282,7 @@ class CalculatorApp {
                     if (this.currentExpression) {
                         this.currentResult = this.mathEngine.evaluate(this.currentExpression);
                         this.lastResult = parseFloat(this.currentResult);
+                        this.currentExpression = this.currentResult;
                     }
                 } catch (error) {
                     this.currentResult = 'Error';
@@ -275,15 +310,21 @@ class CalculatorApp {
                 break;
 
             case 'pow2':
-                this.currentExpression += '^2';
+                this.currentExpression += '**2';
                 break;
 
             case '1/x':
-                this.currentExpression = '1/(' + this.currentExpression + ')';
+                if (this.currentExpression) {
+                    this.currentExpression = '1/(' + this.currentExpression + ')';
+                }
                 break;
 
             case 'exp':
                 this.currentExpression += 'exp(';
+                break;
+
+            case '^':
+                this.currentExpression += '**';
                 break;
 
             case 'MC':
@@ -292,14 +333,19 @@ class CalculatorApp {
             case 'M-':
             case 'MS':
                 this.handleMemoryAction(action);
+                this.refreshMemoryDisplay();
                 break;
 
             default:
-                this.currentExpression += action.includes('sin') || action.includes('cos') || action.includes('tan') || action.includes('log') || action.includes('ln') ? action + '(' : action;
+                if (['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'log', 'ln'].includes(action)) {
+                    this.currentExpression += action + '(';
+                } else {
+                    this.currentExpression += action;
+                }
                 break;
         }
 
-        exprElement.textContent = this.currentExpression;
+        exprElement.textContent = this.currentExpression || '';
         resultElement.textContent = this.currentResult || '0';
     }
 
@@ -373,25 +419,28 @@ class CalculatorApp {
                 if (this.memory.length > 0) {
                     const value = this.memory[this.memory.length - 1];
                     this.currentExpression = value.toString();
+                    this.currentResult = value.toString();
                 }
                 break;
 
             case 'M+':
                 if (this.currentResult !== '0' && this.currentResult !== 'Error') {
+                    const val = parseFloat(this.currentResult);
                     if (this.memory.length > 0) {
-                        this.memory[this.memory.length - 1] += parseFloat(this.currentResult);
+                        this.memory[this.memory.length - 1] += val;
                     } else {
-                        this.memory.push(parseFloat(this.currentResult));
+                        this.memory.push(val);
                     }
                 }
                 break;
 
             case 'M-':
                 if (this.currentResult !== '0' && this.currentResult !== 'Error') {
+                    const val = parseFloat(this.currentResult);
                     if (this.memory.length > 0) {
-                        this.memory[this.memory.length - 1] -= parseFloat(this.currentResult);
+                        this.memory[this.memory.length - 1] -= val;
                     } else {
-                        this.memory.push(-parseFloat(this.currentResult));
+                        this.memory.push(-val);
                     }
                 }
                 break;
@@ -404,6 +453,127 @@ class CalculatorApp {
         }
         
         this.saveMemory();
+        this.refreshMemoryDisplay();
+    }
+
+    refreshMemoryDisplay() {
+        const listContainer = document.getElementById('memory-list');
+        listContainer.innerHTML = '';
+
+        if (this.memory.length === 0) {
+            listContainer.innerHTML = '<div class="memory-empty">No saved values<br><br>Use MS to save<br>the current value</div>';
+            return;
+        }
+
+        this.memory.forEach((val, index) => {
+            const item = document.createElement('div');
+            item.className = 'memory-item';
+            
+            const displayVal = Number.isInteger(val) ? val.toString() : val.toLocaleString('en-US', { maximumSignificantDigits: 10 });
+            
+            item.innerHTML = `
+                <span class="memory-index">M${index + 1}</span>
+                <span class="memory-value">${displayVal}</span>
+                <button class="memory-delete" data-index="${index}">✕</button>
+            `;
+
+            // Click to recall
+            item.addEventListener('click', (e) => {
+                if (e.target.classList.contains('memory-delete')) return;
+                this.recallMemory(index);
+            });
+
+            // Delete button
+            item.querySelector('.memory-delete').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.deleteMemory(index);
+            });
+
+            listContainer.appendChild(item);
+        });
+    }
+
+    recallMemory(index) {
+        if (index >= 0 && index < this.memory.length) {
+            const value = this.memory[index];
+            this.currentExpression = value.toString();
+            this.currentResult = value.toString();
+            
+            // Update display based on current mode
+            this.updateDisplayFromMemory();
+        }
+    }
+
+    deleteMemory(index) {
+        if (index >= 0 && index < this.memory.length) {
+            this.memory.splice(index, 1);
+            this.saveMemory();
+            this.refreshMemoryDisplay();
+        }
+    }
+
+    clearAllMemory() {
+        this.memory = [];
+        this.saveMemory();
+        this.refreshMemoryDisplay();
+    }
+
+    updateDisplayFromMemory() {
+        const mode = this.currentMode;
+        let exprEl, resultEl;
+        
+        switch (mode) {
+            case 'standard':
+                exprEl = document.getElementById('expr');
+                resultEl = document.getElementById('result');
+                break;
+            case 'scientific':
+                exprEl = document.getElementById('sci-expr');
+                resultEl = document.getElementById('sci-result');
+                break;
+            case 'programmer':
+                exprEl = document.getElementById('prog-expr');
+                resultEl = document.getElementById('prog-result');
+                break;
+            case 'minimalist':
+                exprEl = document.getElementById('min-expr');
+                resultEl = document.getElementById('min-result');
+                break;
+            default:
+                return;
+        }
+        
+        if (exprEl) exprEl.textContent = this.currentExpression;
+        if (resultEl) resultEl.textContent = this.currentResult;
+    }
+
+    showMemoryPanel() {
+        document.body.classList.remove('memory-panel-hidden');
+        this.saveMemoryPanelState(true);
+    }
+
+    hideMemoryPanel() {
+        document.body.classList.add('memory-panel-hidden');
+        this.saveMemoryPanelState(false);
+    }
+
+    saveMemoryPanelState(visible) {
+        try {
+            localStorage.setItem('calc-memory-panel-visible', visible ? 'true' : 'false');
+        } catch (error) {
+            console.warn('Could not save memory panel state:', error);
+        }
+    }
+
+    loadMemoryPanelState() {
+        try {
+            const saved = localStorage.getItem('calc-memory-panel-visible');
+            if (saved === 'false') {
+                document.body.classList.add('memory-panel-hidden');
+            }
+        } catch (error) {
+            // Default to visible
+        }
     }
 
     // Currency Converter Functions

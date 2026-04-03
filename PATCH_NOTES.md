@@ -1,5 +1,35 @@
 # Patch Notes
 
+## Version 3.4.2 (April 3, 2026) - Memory Panel & Bug Fixes 🧠
+
+### New Features
+- **Memory Panel (Web Version)**: Right sidebar with visual memory management
+  - ✕ close button to hide panel, O button to show it
+  - Clickable memory entries to recall values
+  - Individual delete buttons (✕) for each entry
+  - Clear All button at bottom
+  - State persistence via localStorage
+
+### Bug Fixes
+- 🐛 **Fixed keyboard input** - Added `e.preventDefault()` to prevent browser shortcuts interfering with calculator
+- 🐛 **Fixed expression display** - Expression now updates after calculation (= shows result in both expression and result fields)
+- 🐛 **Fixed scientific mode** - `x²` button now uses `**2` instead of `^2`, `^` button uses `**`
+- 🐛 **Fixed 1/x button** - Now properly wraps current expression: `1/(expr)`
+- 🐛 **Fixed negate button** - Better handling of nested negations with parentheses
+- 🐛 **Fixed memory actions** - MC/MR/M+/M-/MS now refresh the memory panel display
+- 🐛 **Fixed math engine** - Replaced `^` with `**` for JavaScript exponentiation, proper constant substitution for π and e
+- 🐛 **Fixed empty expression display** - Shows empty string instead of "0" in expression field
+
+### Technical Changes
+- Added memory panel HTML structure to `web/index.html`
+- Added memory panel CSS styles to `web/styles.css`
+- Rewrote memory handling in `web/app.js` with `refreshMemoryDisplay()`, `recallMemory()`, `deleteMemory()`, `clearAllMemory()`
+- Added memory panel toggle: `showMemoryPanel()`, `hideMemoryPanel()`, `saveMemoryPanelState()`, `loadMemoryPanelState()`
+- Updated keyboard event handler to prevent default for all calculator keys
+- Improved math engine preprocessing in `web/math.js`
+
+---
+
 ## Version 3.4.1 (April 3, 2026) - Web Version Release 🌐
 
 ### Major Release
@@ -344,4 +374,4 @@ Found a bug? Please include:
 ---
 
 **Last Updated**: April 3, 2026
-**Current Version**: 3.4.1
+**Current Version**: 3.4.2

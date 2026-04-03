@@ -39,15 +39,11 @@ class MathEngine {
             .replace(/×/g, '*')
             .replace(/÷/g, '/')
             .replace(/−/g, '-')
-            .replace(/\^/g, '**')
-            .replace(/π/g, 'Math.PI')
-            .replace(/(?<![a-zA-Z])e(?![a-zA-Z^])/g, 'Math.E');
+            .replace(/(?<![a-zA-Z])e(?![a-zA-Z(])/g, Math.E.toString())
+            .replace(/π/g, Math.PI.toString());
     }
 
     safeEvaluate(expr) {
-        // Only allow safe mathematical operations
-        const allowedPattern = /^[0-9+\-*/().%\s,MathPIEsqrtincotalogbpf]*$/;
-        
         // Create safe evaluation context
         const safeMath = {
             sin: Math.sin,
@@ -61,23 +57,25 @@ class MathEngine {
             sqrt: Math.sqrt,
             exp: Math.exp,
             abs: Math.abs,
-            pow: Math.pow,
-            PI: Math.PI,
-            E: Math.E
+            pow: Math.pow
         };
 
         // Replace function names with safeMath references
         let processedExpr = expr
+            .replace(/\*\*/g, '__pow__')
             .replace(/sin\(/g, 'safeMath.sin(')
             .replace(/cos\(/g, 'safeMath.cos(')
             .replace(/tan\(/g, 'safeMath.tan(')
             .replace(/asin\(/g, 'safeMath.asin(')
             .replace(/acos\(/g, 'safeMath.acos(')
             .replace(/atan\(/g, 'safeMath.atan(')
+            .replace(/log10\(/g, 'safeMath.log(')
             .replace(/log\(/g, 'safeMath.log(')
             .replace(/ln\(/g, 'safeMath.ln(')
             .replace(/sqrt\(/g, 'safeMath.sqrt(')
-            .replace(/exp\(/g, 'safeMath.exp(');
+            .replace(/exp\(/g, 'safeMath.exp(')
+            .replace(/abs\(/g, 'safeMath.abs(')
+            .replace(/__pow__/g, 'safeMath.pow(');
 
         try {
             // eslint-disable-next-line no-new-func
