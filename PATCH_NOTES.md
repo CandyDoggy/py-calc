@@ -1,6 +1,22 @@
 # Patch Notes
 
-## Version 3.1.0 (April 3, 2026) - Windows 11 Fluent Design & Currency Exchange 🪟
+## Version 3.2.1 (April 3, 2026) - New Calculator Modes & 50+ Currencies 🧮
+
+### New Calculator Modes
+- **Programmer**: Hex/Dec/Oct/Bin conversion, bitwise operations (AND, OR, XOR, NOT, SHL)
+- **Minimalist**: Clean, essentials-only layout
+- **Modern**: Extra functions (x², √, trig, constants)
+- Standard, Scientific, Currency (existing)
+
+### Currencies
+- 50+ world currencies including AMD (Armenian Dram ֏)
+
+### Themes
+- Fluent Dark, Fluent Light, Fluent Mica
+
+---
+
+## Version 3.2.0 (April 3, 2026) - Windows 11 Fluent Design & Currency Exchange 🪟
 
 ### Major Changes
 - **Complete UI Redesign**: Windows 11 Fluent Design language throughout
