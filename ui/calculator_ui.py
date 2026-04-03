@@ -246,6 +246,8 @@ class CalculatorUI(ctk.CTk):
             ("minimalist", "✨", "Minimalist"),
             ("modern", "🎨", "Modern"),
             ("currency", "💱", "Currency"),
+            ("metric", "📏", "Metric/Imperial"),
+            ("temperature", "🌡️", "Temperature"),
         ]
 
         for mode, icon, label in nav_items:
@@ -409,9 +411,25 @@ class CalculatorUI(ctk.CTk):
             )
             val_label.grid(row=0, column=1, sticky="e", padx=5)
 
-            # Make clickable
+            # Delete button
+            del_btn = ctk.CTkButton(
+                row_frame,
+                text="✕",
+                font=ctk.CTkFont(size=12),
+                fg_color="transparent",
+                hover_color="#ff4444",
+                text_color=theme["text_secondary"],
+                width=24,
+                height=24,
+                corner_radius=4,
+                command=lambda idx=i: self._delete_memory(idx)
+            )
+            del_btn.grid(row=0, column=2, padx=(5, 5))
+
+            # Make clickable (except delete button)
             for widget in row_frame.winfo_children():
-                widget.bind("<Button-1>", lambda e, idx=i: self._recall_memory(idx))
+                if widget != del_btn:
+                    widget.bind("<Button-1>", lambda e, idx=i: self._recall_memory(idx))
             row_frame.bind("<Button-1>", lambda e, idx=i: self._recall_memory(idx))
 
             # Hover effect
@@ -423,8 +441,9 @@ class CalculatorUI(ctk.CTk):
             row_frame.bind("<Enter>", on_enter)
             row_frame.bind("<Leave>", on_leave)
             for widget in row_frame.winfo_children():
-                widget.bind("<Enter>", on_enter)
-                widget.bind("<Leave>", on_leave)
+                if widget != del_btn:
+                    widget.bind("<Enter>", on_enter)
+                    widget.bind("<Leave>", on_leave)
 
     def _clear_all_memory(self):
         """Clear all memory entries."""
@@ -432,6 +451,15 @@ class CalculatorUI(ctk.CTk):
         self.selected_memory_index = -1
         self._save_memory()
         self._refresh_memory_display()
+
+    def _delete_memory(self, index):
+        """Delete a specific memory entry."""
+        if 0 <= index < len(self.memory_list):
+            self.memory_list.pop(index)
+            if self.selected_memory_index >= len(self.memory_list):
+                self.selected_memory_index = len(self.memory_list) - 1
+            self._save_memory()
+            self._refresh_memory_display()
 
     def _recall_memory(self, index):
         """Recall a memory value by index."""
@@ -471,6 +499,10 @@ class CalculatorUI(ctk.CTk):
             self._create_modern_view(content)
         elif self.current_mode == "currency":
             self._create_currency_view(content)
+        elif self.current_mode == "metric":
+            self._create_metric_view(content)
+        elif self.current_mode == "temperature":
+            self._create_temperature_view(content)
 
     def _create_standard_view(self, parent):
         """Create standard calculator view."""
@@ -1001,6 +1033,363 @@ class CalculatorUI(ctk.CTk):
         for row_data in buttons_config:
             for text, row, col in row_data:
                 self._create_fluent_button(buttons_frame, text, row, col)
+
+    def _create_metric_view(self, parent):
+        """Create Metric to Imperial converter view."""
+        theme = THEMES[self.current_theme]
+        parent.grid_columnconfigure(0, weight=1)
+        parent.grid_rowconfigure(0, weight=1)
+
+        container = ctk.CTkFrame(parent, fg_color=theme["card_bg"], corner_radius=12)
+        container.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+        container.grid_columnconfigure(0, weight=1)
+
+        # Title
+        title = ctk.CTkLabel(
+            container, text="Metric ↔ Imperial",
+            font=ctk.CTkFont(size=22, weight="bold"),
+            text_color=theme["text_color"]
+        )
+        title.grid(row=0, column=0, pady=(20, 10))
+
+        # Conversion type selector
+        self.metric_type_var = ctk.StringVar(value="Length")
+        type_frame = ctk.CTkFrame(container, fg_color="transparent")
+        type_frame.grid(row=1, column=0, pady=10, padx=20, sticky="ew")
+        type_frame.grid_columnconfigure(0, weight=1)
+
+        ctk.CTkLabel(
+            type_frame, text="Type:",
+            font=ctk.CTkFont(size=14),
+            text_color=theme["text_secondary"]
+        ).grid(row=0, column=0, padx=(0, 10))
+
+        self.metric_type_combo = ctk.CTkComboBox(
+            type_frame,
+            values=["Length", "Weight", "Volume", "Speed"],
+            variable=self.metric_type_var,
+            command=self._on_metric_type_change,
+            height=36,
+            corner_radius=8
+        )
+        self.metric_type_combo.grid(row=0, column=1, sticky="ew")
+
+        # Input frame
+        input_frame = ctk.CTkFrame(container, fg_color="transparent")
+        input_frame.grid(row=2, column=0, pady=15, padx=20, sticky="ew")
+        input_frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(
+            input_frame, text="Value:",
+            font=ctk.CTkFont(size=14),
+            text_color=theme["text_secondary"]
+        ).grid(row=0, column=0, padx=(0, 10))
+
+        self.metric_value_var = ctk.StringVar(value="1")
+        self.metric_value = ctk.CTkEntry(
+            input_frame,
+            textvariable=self.metric_value_var,
+            font=ctk.CTkFont(size=16),
+            height=36,
+            corner_radius=8
+        )
+        self.metric_value.grid(row=0, column=1, sticky="ew")
+        self.metric_value.bind("<KeyRelease>", self._on_metric_convert)
+
+        # Metric input
+        metric_frame = ctk.CTkFrame(container, fg_color="transparent")
+        metric_frame.grid(row=3, column=0, pady=10, padx=20, sticky="ew")
+        metric_frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(
+            metric_frame, text="Metric:",
+            font=ctk.CTkFont(size=14),
+            text_color=theme["text_secondary"]
+        ).grid(row=0, column=0, padx=(0, 10))
+
+        self.metric_unit_var = ctk.StringVar(value="Meters")
+        self.metric_unit = ctk.CTkComboBox(
+            metric_frame,
+            values=["Meters", "Kilometers", "Grams", "Kilograms", "Liters", "Km/h"],
+            variable=self.metric_unit_var,
+            command=self._on_metric_convert,
+            height=36,
+            corner_radius=8
+        )
+        self.metric_unit.grid(row=0, column=1, sticky="ew")
+
+        # Imperial input
+        imperial_frame = ctk.CTkFrame(container, fg_color="transparent")
+        imperial_frame.grid(row=4, column=0, pady=10, padx=20, sticky="ew")
+        imperial_frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(
+            imperial_frame, text="Imperial:",
+            font=ctk.CTkFont(size=14),
+            text_color=theme["text_secondary"]
+        ).grid(row=0, column=0, padx=(0, 10))
+
+        self.imperial_unit_var = ctk.StringVar(value="Feet")
+        self.imperial_unit = ctk.CTkComboBox(
+            imperial_frame,
+            values=["Feet", "Miles", "Ounces", "Pounds", "Gallons", "Mph"],
+            variable=self.imperial_unit_var,
+            command=self._on_metric_convert,
+            height=36,
+            corner_radius=8
+        )
+        self.imperial_unit.grid(row=0, column=1, sticky="ew")
+
+        # Result
+        self.metric_result_label = ctk.CTkLabel(
+            container,
+            text="",
+            font=ctk.CTkFont(size=28, weight="bold"),
+            text_color=theme["accent_color"]
+        )
+        self.metric_result_label.grid(row=5, column=0, pady=(20, 30))
+
+        # Initial conversion
+        self._on_metric_type_change()
+
+    def _on_metric_type_change(self, event=None):
+        """Update units when conversion type changes."""
+        type_map = {
+            "Length": ("Meters", "Feet"),
+            "Weight": ("Kilograms", "Pounds"),
+            "Volume": ("Liters", "Gallons"),
+            "Speed": ("Km/h", "Mph"),
+        }
+        t = self.metric_type_var.get()
+        metric_u, imperial_u = type_map.get(t, ("Meters", "Feet"))
+
+        length_units = ["Meters", "Kilometers", "Centimeters", "Millimeters"]
+        weight_units = ["Grams", "Kilograms"]
+        volume_units = ["Milliliters", "Liters"]
+        speed_units = ["Km/h", "Mph"]
+
+        unit_map = {
+            "Length": (length_units, ["Feet", "Miles", "Inches", "Yards"]),
+            "Weight": (weight_units, ["Ounces", "Pounds"]),
+            "Volume": (volume_units, ["Fluid Ounces", "Gallons"]),
+            "Speed": (speed_units, speed_units[1:]),
+        }
+
+        metric_opts, imperial_opts = unit_map.get(t, (["Meters"], ["Feet"]))
+        self.metric_unit.configure(values=metric_opts)
+        self.imperial_unit.configure(values=imperial_opts)
+        self.metric_unit_var.set(metric_opts[0])
+        self.imperial_unit_var.set(imperial_opts[0])
+        self._on_metric_convert()
+
+    def _on_metric_convert(self, event=None):
+        """Perform metric to imperial conversion."""
+        try:
+            value = float(self.metric_value_var.get())
+        except ValueError:
+            self.metric_result_label.configure(text="Invalid input")
+            return
+
+        t = self.metric_type_var.get()
+        metric_u = self.metric_unit_var.get()
+        imperial_u = self.imperial_unit_var.get()
+
+        # Conversion factors to base unit, then to target
+        # Length (base: meters)
+        length_to_m = {"Meters": 1, "Kilometers": 1000, "Centimeters": 0.01, "Millimeters": 0.001}
+        m_to_imperial = {"Feet": 3.28084, "Miles": 0.000621371, "Inches": 39.3701, "Yards": 1.09361}
+
+        # Weight (base: kg)
+        weight_to_kg = {"Kilograms": 1, "Grams": 0.001}
+        kg_to_imperial = {"Pounds": 2.20462, "Ounces": 35.274}
+
+        # Volume (base: liters)
+        volume_to_l = {"Liters": 1, "Milliliters": 0.001}
+        l_to_imperial = {"Gallons": 0.264172, "Fluid Ounces": 33.814}
+
+        # Speed (base: km/h)
+        speed_to_kmh = {"Km/h": 1, "Mph": 1.60934}
+        kmh_to_imperial = {"Mph": 0.621371}
+
+        result = None
+        if t == "Length":
+            meters = value * length_to_m.get(metric_u, 1)
+            result = meters * m_to_imperial.get(imperial_u, 1)
+        elif t == "Weight":
+            kg = value * weight_to_kg.get(metric_u, 1)
+            result = kg * kg_to_imperial.get(imperial_u, 1)
+        elif t == "Volume":
+            liters = value * volume_to_l.get(metric_u, 1)
+            result = liters * l_to_imperial.get(imperial_u, 1)
+        elif t == "Speed":
+            kmh = value * speed_to_kmh.get(metric_u, 1)
+            result = kmh * kmh_to_imperial.get(imperial_u, 1)
+
+        if result is not None:
+            if result == int(result):
+                result_str = str(int(result))
+            else:
+                result_str = f"{result:.4f}".rstrip('0').rstrip('.')
+            self.metric_result_label.configure(
+                text=f"{value:g} {metric_u}\n=\n{result_str} {imperial_u}"
+            )
+        else:
+            self.metric_result_label.configure(text="Invalid conversion")
+
+    def _create_temperature_view(self, parent):
+        """Create Temperature converter view."""
+        theme = THEMES[self.current_theme]
+        parent.grid_columnconfigure(0, weight=1)
+        parent.grid_rowconfigure(0, weight=1)
+
+        container = ctk.CTkFrame(parent, fg_color=theme["card_bg"], corner_radius=12)
+        container.grid(row=0, column=0, sticky="nsew", padx=40, pady=40)
+        container.grid_columnconfigure(0, weight=1)
+
+        # Title
+        title = ctk.CTkLabel(
+            container, text="Temperature Converter",
+            font=ctk.CTkFont(size=22, weight="bold"),
+            text_color=theme["text_color"]
+        )
+        title.grid(row=0, column=0, pady=(20, 15))
+
+        # Input
+        input_frame = ctk.CTkFrame(container, fg_color="transparent")
+        input_frame.grid(row=1, column=0, pady=10, padx=30, sticky="ew")
+        input_frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(
+            input_frame, text="Value:",
+            font=ctk.CTkFont(size=14),
+            text_color=theme["text_secondary"]
+        ).grid(row=0, column=0, padx=(0, 10))
+
+        self.temp_value_var = ctk.StringVar(value="100")
+        self.temp_value = ctk.CTkEntry(
+            input_frame,
+            textvariable=self.temp_value_var,
+            font=ctk.CTkFont(size=16),
+            height=36,
+            corner_radius=8
+        )
+        self.temp_value.grid(row=0, column=1, sticky="ew")
+        self.temp_value.bind("<KeyRelease>", self._on_temp_convert)
+
+        # From unit
+        from_frame = ctk.CTkFrame(container, fg_color="transparent")
+        from_frame.grid(row=2, column=0, pady=15, padx=30, sticky="ew")
+        from_frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(
+            from_frame, text="From:",
+            font=ctk.CTkFont(size=14),
+            text_color=theme["text_secondary"]
+        ).grid(row=0, column=0, padx=(0, 10))
+
+        self.temp_from_var = ctk.StringVar(value="Celsius")
+        self.temp_from = ctk.CTkComboBox(
+            from_frame,
+            values=["Celsius", "Fahrenheit", "Kelvin"],
+            variable=self.temp_from_var,
+            command=self._on_temp_convert,
+            height=36,
+            corner_radius=8
+        )
+        self.temp_from.grid(row=0, column=1, sticky="ew")
+
+        # To unit
+        to_frame = ctk.CTkFrame(container, fg_color="transparent")
+        to_frame.grid(row=3, column=0, pady=15, padx=30, sticky="ew")
+        to_frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(
+            to_frame, text="To:",
+            font=ctk.CTkFont(size=14),
+            text_color=theme["text_secondary"]
+        ).grid(row=0, column=0, padx=(0, 10))
+
+        self.temp_to_var = ctk.StringVar(value="Fahrenheit")
+        self.temp_to = ctk.CTkComboBox(
+            to_frame,
+            values=["Celsius", "Fahrenheit", "Kelvin"],
+            variable=self.temp_to_var,
+            command=self._on_temp_convert,
+            height=36,
+            corner_radius=8
+        )
+        self.temp_to.grid(row=0, column=1, sticky="ew")
+
+        # Swap button
+        swap_btn = ctk.CTkButton(
+            container,
+            text="⇅  Swap",
+            font=ctk.CTkFont(size=14),
+            fg_color=theme["button_bg"],
+            hover_color=theme["button_hover"],
+            text_color=theme["text_color"],
+            height=36,
+            corner_radius=8,
+            command=self._swap_temps
+        )
+        swap_btn.grid(row=4, column=0, pady=10)
+
+        # Result
+        self.temp_result_label = ctk.CTkLabel(
+            container,
+            text="",
+            font=ctk.CTkFont(size=28, weight="bold"),
+            text_color=theme["accent_color"]
+        )
+        self.temp_result_label.grid(row=5, column=0, pady=(20, 30))
+
+        # Initial conversion
+        self._on_temp_convert()
+
+    def _swap_temps(self):
+        """Swap from and to temperature units."""
+        from_val = self.temp_from_var.get()
+        to_val = self.temp_to_var.get()
+        self.temp_from_var.set(to_val)
+        self.temp_to_var.set(from_val)
+        self._on_temp_convert()
+
+    def _on_temp_convert(self, event=None):
+        """Perform temperature conversion."""
+        try:
+            value = float(self.temp_value_var.get())
+        except ValueError:
+            self.temp_result_label.configure(text="Invalid input")
+            return
+
+        from_u = self.temp_from_var.get()
+        to_u = self.temp_to_var.get()
+
+        # Convert to Celsius first
+        if from_u == "Celsius":
+            celsius = value
+        elif from_u == "Fahrenheit":
+            celsius = (value - 32) * 5/9
+        elif from_u == "Kelvin":
+            celsius = value - 273.15
+
+        # Convert from Celsius to target
+        if to_u == "Celsius":
+            result = celsius
+        elif to_u == "Fahrenheit":
+            result = celsius * 9/5 + 32
+        elif to_u == "Kelvin":
+            result = celsius + 273.15
+
+        # Format nicely
+        if result == int(result):
+            result_str = str(int(result))
+        else:
+            result_str = f"{result:.2f}".rstrip('0').rstrip('.')
+
+        self.temp_result_label.configure(
+            text=f"{value:g}° {from_u}\n=\n{result_str}° {to_u}"
+        )
 
     def _on_button_click(self, text: str):
         """Handle button click."""
