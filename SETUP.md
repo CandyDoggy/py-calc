@@ -2,6 +2,8 @@
 
 This calculator works on **Windows**, **macOS**, and **Linux**.
 
+🌐 **No Installation Needed**: Use the calculator online at **https://candydoggy.github.io/py-calc-cqwen/**
+
 ## Prerequisites
 
 - **Python 3.8 or higher** ([Download](https://www.python.org/downloads/))
@@ -110,6 +112,11 @@ sudo apt install python3-full python3-venv
 
 - **Standard Mode**: Basic arithmetic with memory (MC, MR, M+, M-, MS)
 - **Scientific Mode**: Trig, logs, constants, powers
-- **Currency Converter**: 20 world currencies with real-time conversion
+- **Programmer Mode**: Hex/Dec/Oct/Bin conversion, bitwise operations
+- **Minimalist Mode**: Clean, essentials-only interface
+- **Currency Converter**: 53 world currencies with real-time conversion
+- **Metric/Imperial Converter**: 9 conversion types (Length, Weight, Volume, Speed, Area, Time, Data, Energy, Pressure)
+- **Temperature Converter**: Celsius, Fahrenheit, Kelvin
+- **9 Themes**: Fluent Dark, Fluent Light, Midnight Blue, Forest Green, Sunset Orange, Royal Purple, Rose Gold, Arctic White, Cyber Yellow
 - **Persistent History**: Auto-saved between sessions
 - **Memory Persistence**: Saved values survive app restarts

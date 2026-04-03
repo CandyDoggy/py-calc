@@ -271,12 +271,14 @@ chmod +x run.sh
 
 See [PATCH_NOTES.md](PATCH_NOTES.md) for detailed version history.
 
-### Latest: v3.1.0 (2026)
-- Windows 11 Fluent Design UI with sidebar navigation
-- Currency Exchanger with 20 world currencies
-- Memory system (MC, MR, M+, M-, MS) with persistence
-- Persistent calculation history
-- Fluent Dark, Light, and Mica themes
+### Latest: v3.4.1 (2026) - Web Version Release
+- 🌐 Full web version available at https://candydoggy.github.io/py-calc-cqwen/
+- All 7 calculator modes: Standard, Scientific, Programmer, Minimalist, Currency, Metric/Imperial, Temperature
+- 9 beautiful themes with localStorage persistence
+- Responsive design for mobile and desktop
+- 53 currencies with search functionality
+- 9 metric/imperial conversion types
+- Temperature converter (Celsius, Fahrenheit, Kelvin)
 
 ---
 

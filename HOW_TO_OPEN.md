@@ -1,5 +1,15 @@
 # How to Open Calculator
 
+## 🌐 Use Online (No Installation Required)
+
+Access the calculator directly in your browser:
+
+**https://candydoggy.github.io/py-calc-cqwen/**
+
+Works on all devices: Windows, macOS, Linux, iOS, Android
+
+---
+
 ## Quick Start (Recommended)
 
 Works on **Windows**, **macOS**, and **Linux**:
@@ -91,7 +101,11 @@ python main.py
 |------|-------------|
 | **Standard** | Basic arithmetic with memory buttons |
 | **Scientific** | Trig functions, logs, constants, powers |
-| **Currency** | Convert between 20 world currencies |
+| **Programmer** | Hex/Dec/Oct/Bin conversion, bitwise operations |
+| **Minimalist** | Clean, essentials-only interface |
+| **Currency** | Convert between 53 world currencies |
+| **Metric/Imperial** | 9 conversion types |
+| **Temperature** | Celsius, Fahrenheit, Kelvin |
 
 ---
 
