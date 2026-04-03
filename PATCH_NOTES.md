@@ -1,5 +1,23 @@
 # Patch Notes
 
+## Version 3.4.31 (April 3, 2026) - Web Parity & Desktop Bug Fix 🔧
+
+### New Features
+- **Web Version Memory Toggle Moved to Sidebar**:
+  - Toggle button now at sidebar bottom (matching desktop app layout)
+  - Same 160x32px button styling as desktop
+  - SVG icon (circle with "M") preserved
+
+### Bug Fixes
+- 🐛 **Fixed desktop memory panel close bug** - Calculator/exchanger content no longer disappears when closing memory panel
+  - Removed duplicate `_create_memory_toggle_button` call from `_create_content_area`
+  - Toggle button now only exists in sidebar
+
+### Documentation
+- ⚠️ **Added web version disclaimer to README**: "Web version may have fewer features and could be slightly outdated"
+
+---
+
 ## Version 3.4.3 (April 3, 2026) - Icon Overhaul & Memory Toggle 🎨
 
 ### New Features
