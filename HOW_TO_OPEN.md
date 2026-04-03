@@ -24,13 +24,34 @@ Download from: https://www.python.org/downloads/
 
 ### Step 2: Open the Calculator
 
-#### Option A: Using launcher.py (Easiest)
-```bash
-cd calculator
+#### Windows (App-like Experience)
+
+**Option A: Install to Start Menu (Recommended)**
+1. Double-click `install.bat`
+2. Calculator now appears in your Start Menu
+3. Launch from Start Menu — no CMD window!
+
+**Option B: Double-click**
+- Double-click `calculator.pyw` — runs without a CMD window
+
+**Option C: Command Line**
+```cmd
 python launcher.py
 ```
 
-#### Option B: Manual Setup
+#### macOS / Linux
+
+```bash
+python launcher.py
+```
+
+Or:
+```bash
+chmod +x run.sh
+./run.sh
+```
+
+#### Manual Setup (Any OS)
 ```bash
 cd calculator
 
@@ -49,10 +70,6 @@ pip install -r requirements.txt
 # Run
 python main.py
 ```
-
-#### Option C: Platform Scripts
-- **Windows**: Double-click `run.bat`
-- **macOS/Linux**: `./run.sh`
 
 ---
 
