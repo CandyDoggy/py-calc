@@ -127,6 +127,28 @@ CURRENCY_SYMBOLS = {
     "HRK": "kn", "DKK": "kr", "ISK": "kr",
 }
 
+# Currency names for display
+CURRENCY_NAMES = {
+    "USD": "US Dollar", "EUR": "Euro", "GBP": "British Pound", "JPY": "Japanese Yen",
+    "CNY": "Chinese Yuan", "AUD": "Australian Dollar", "CAD": "Canadian Dollar",
+    "CHF": "Swiss Franc", "INR": "Indian Rupee", "KRW": "South Korean Won",
+    "MXN": "Mexican Peso", "BRL": "Brazilian Real", "SGD": "Singapore Dollar",
+    "HKD": "Hong Kong Dollar", "NZD": "New Zealand Dollar", "SEK": "Swedish Krona",
+    "NOK": "Norwegian Krone", "TRY": "Turkish Lira", "RUB": "Russian Ruble",
+    "ZAR": "South African Rand", "AMD": "Armenian Dram", "DRAM": "Armenian Dram",
+    "AED": "UAE Dirham", "THB": "Thai Baht", "IDR": "Indonesian Rupiah",
+    "MYR": "Malaysian Ringgit", "PHP": "Philippine Peso", "PLN": "Polish Zloty",
+    "CZK": "Czech Koruna", "HUF": "Hungarian Forint", "ILS": "Israeli Shekel",
+    "CLP": "Chilean Peso", "COP": "Colombian Peso", "ARS": "Argentine Peso",
+    "EGP": "Egyptian Pound", "SAR": "Saudi Riyal", "QAR": "Qatari Riyal",
+    "KWD": "Kuwaiti Dinar", "BHD": "Bahraini Dinar", "OMR": "Omani Rial",
+    "JOD": "Jordanian Dinar", "LKR": "Sri Lankan Rupee", "PKR": "Pakistani Rupee",
+    "BDT": "Bangladeshi Taka", "VND": "Vietnamese Dong", "NGN": "Nigerian Naira",
+    "KES": "Kenyan Shilling", "GHS": "Ghanaian Cedi", "UAH": "Ukrainian Hryvnia",
+    "RON": "Romanian Leu", "BGN": "Bulgarian Lev", "HRK": "Croatian Kuna",
+    "DKK": "Danish Krone", "ISK": "Icelandic Krona",
+}
+
 
 class CalculatorUI(ctk.CTk):
     """Main Calculator Application with Windows 11 Fluent Design."""
@@ -621,7 +643,8 @@ class CalculatorUI(ctk.CTk):
         sorted_currencies = sorted(CURRENCY_RATES.keys(), key=lambda x: x.lower())
 
         for i, code in enumerate(sorted_currencies):
-            symbol = CURRENCY_SYMBOLS.get(code, "")
+            symbol = CURRENCY_SYMBOLS.get(code, code[:2])
+            name = CURRENCY_NAMES.get(code, code)
             rate = CURRENCY_RATES[code]
 
             row_frame = ctk.CTkFrame(self.currency_scroll, fg_color="transparent")
@@ -631,8 +654,8 @@ class CalculatorUI(ctk.CTk):
             # Symbol
             sym_label = ctk.CTkLabel(
                 row_frame, text=symbol,
-                font=ctk.CTkFont(size=14),
-                text_color=theme["text_secondary"],
+                font=ctk.CTkFont(size=16),
+                text_color=theme["accent_color"],
                 width=40,
                 anchor="w"
             )
@@ -640,8 +663,8 @@ class CalculatorUI(ctk.CTk):
 
             # Code and name
             code_label = ctk.CTkLabel(
-                row_frame, text=f"{code}",
-                font=ctk.CTkFont(size=14, weight="bold"),
+                row_frame, text=f"{code}  {name}",
+                font=ctk.CTkFont(size=13),
                 text_color=theme["text_color"],
                 anchor="w"
             )
@@ -649,7 +672,7 @@ class CalculatorUI(ctk.CTk):
 
             # Rate
             rate_label = ctk.CTkLabel(
-                row_frame, text=f"1 USD = {rate:,.2f}",
+                row_frame, text=f"{rate:,.2f}",
                 font=ctk.CTkFont(size=12),
                 text_color=theme["text_secondary"],
                 anchor="e"
@@ -713,8 +736,9 @@ class CalculatorUI(ctk.CTk):
             from_sym = CURRENCY_SYMBOLS.get(from_curr, from_curr)
             to_sym = CURRENCY_SYMBOLS.get(to_curr, to_curr)
 
+            # Show full conversion: "1 USD = 0.92 EUR" and the amount
             self.currency_result_label.configure(
-                text=f"{to_sym} {result:,.2f}"
+                text=f"{from_sym}{amount:,.2f} {from_curr}\n=\n{to_sym}{result:,.2f} {to_curr}"
             )
         except (ValueError, KeyError):
             self.currency_result_label.configure(text="Invalid input")
@@ -1008,26 +1032,41 @@ class CalculatorUI(ctk.CTk):
     # ==================== MEMORY SYSTEM ====================
 
     def _memory_action(self, action: str):
-        """Handle memory operations."""
+        """Handle memory operations (Windows Calculator style)."""
+        # Get current displayed value
+        display_val = self.current_result
+        if display_val in ["0", "Error", ""]:
+            display_val = "0"
+
         try:
-            current_val = float(self.current_result) if self.current_result not in ["0", "Error", ""] else 0.0
+            current_val = float(display_val)
         except ValueError:
             current_val = 0.0
 
         if action == "MC":
             self.memory = 0.0
         elif action == "MR":
-            self.current_result = str(self.memory)
+            # Recall memory - show it in display
             self.current_expression = ""
+            self.current_result = str(self.memory)
+            # Format nicely
+            if self.memory == int(self.memory):
+                self.current_result = str(int(self.memory))
+            else:
+                self.current_result = f"{self.memory:g}"
         elif action == "M+":
+            # Add current value to memory
             self.memory += current_val
         elif action == "M-":
+            # Subtract current value from memory
             self.memory -= current_val
         elif action == "MS":
+            # Store current value in memory
             self.memory = current_val
 
         # Update memory indicator
-        self.memory_label.configure(text="M" if self.memory != 0 else "")
+        if hasattr(self, 'memory_label'):
+            self.memory_label.configure(text="M" if self.memory != 0 else "")
 
         # Save memory
         self._save_memory()
