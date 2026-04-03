@@ -804,6 +804,15 @@ body {
 }
 
 /* Memory Toggle Button (sidebar bottom, matching desktop app) */
+.theme-selector {
+    margin-top: auto;
+}
+
+.theme-selector + .separator {
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
 .memory-toggle-btn-sidebar {
     background: var(--button-bg);
     border: 1px solid var(--border-color);
@@ -816,8 +825,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     transition: all 0.15s;
-    margin: 0 10px 15px 20px;
+    margin: 0 10px 10px 10px;
 }
 
 .memory-toggle-btn-sidebar:hover {
