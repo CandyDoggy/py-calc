@@ -470,26 +470,28 @@ class CalculatorUI(ctk.CTk):
         return btn
 
     def _create_currency_view(self, parent):
-        """Create currency converter view."""
+        """Create currency converter view with searchable list."""
         theme = THEMES[self.current_theme]
         parent.grid_columnconfigure(0, weight=1)
         parent.grid_rowconfigure(0, weight=1)
 
+        # Main container
         container = ctk.CTkFrame(parent, fg_color=theme["card_bg"], corner_radius=12)
-        container.grid(row=0, column=0, sticky="nsew", padx=40, pady=40)
+        container.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
         container.grid_columnconfigure(0, weight=1)
+        container.grid_rowconfigure(3, weight=1)
 
         # Title
         title = ctk.CTkLabel(
             container, text="Currency Converter",
-            font=ctk.CTkFont(size=24, weight="bold"),
+            font=ctk.CTkFont(size=22, weight="bold"),
             text_color=theme["text_color"]
         )
-        title.grid(row=0, column=0, pady=(30, 20))
+        title.grid(row=0, column=0, pady=(15, 10))
 
         # Amount input
         amount_frame = ctk.CTkFrame(container, fg_color="transparent")
-        amount_frame.grid(row=1, column=0, pady=10, padx=30, sticky="ew")
+        amount_frame.grid(row=1, column=0, pady=5, padx=20, sticky="ew")
         amount_frame.grid_columnconfigure(1, weight=1)
 
         ctk.CTkLabel(
@@ -502,81 +504,199 @@ class CalculatorUI(ctk.CTk):
         self.currency_amount = ctk.CTkEntry(
             amount_frame,
             textvariable=self.currency_amount_var,
-            font=ctk.CTkFont(size=18),
-            height=40,
+            font=ctk.CTkFont(size=16),
+            height=36,
             corner_radius=8
         )
         self.currency_amount.grid(row=0, column=1, sticky="ew")
         self.currency_amount.bind("<KeyRelease>", self._on_currency_change)
 
-        # From currency
-        from_frame = ctk.CTkFrame(container, fg_color="transparent")
-        from_frame.grid(row=2, column=0, pady=15, padx=30, sticky="ew")
-        from_frame.grid_columnconfigure(1, weight=1)
+        # Selected currencies display
+        selected_frame = ctk.CTkFrame(container, fg_color="transparent")
+        selected_frame.grid(row=2, column=0, pady=10, padx=20, sticky="ew")
+        selected_frame.grid_columnconfigure((0, 1, 2), weight=1)
 
-        ctk.CTkLabel(
-            from_frame, text="From:",
-            font=ctk.CTkFont(size=14),
-            text_color=theme["text_secondary"]
-        ).grid(row=0, column=0, padx=(0, 10))
+        # From currency display
+        self.from_display = ctk.CTkFrame(selected_frame, fg_color=theme["button_bg"], corner_radius=8)
+        self.from_display.grid(row=0, column=0, padx=5, sticky="ew")
+        self.from_display.grid_columnconfigure(0, weight=1)
 
-        self.currency_from_var = ctk.StringVar(value="USD")
-        self.currency_from = ctk.CTkComboBox(
-            from_frame,
-            values=list(CURRENCY_RATES.keys()),
-            variable=self.currency_from_var,
-            command=self._on_currency_change,
-            height=40,
-            corner_radius=8
+        self.from_label = ctk.CTkLabel(
+            self.from_display, text="USD",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color=theme["text_color"]
         )
-        self.currency_from.grid(row=0, column=1, sticky="ew")
-
-        # To currency
-        to_frame = ctk.CTkFrame(container, fg_color="transparent")
-        to_frame.grid(row=3, column=0, pady=15, padx=30, sticky="ew")
-        to_frame.grid_columnconfigure(1, weight=1)
-
-        ctk.CTkLabel(
-            to_frame, text="To:",
-            font=ctk.CTkFont(size=14),
-            text_color=theme["text_secondary"]
-        ).grid(row=0, column=0, padx=(0, 10))
-
-        self.currency_to_var = ctk.StringVar(value="EUR")
-        self.currency_to = ctk.CTkComboBox(
-            to_frame,
-            values=list(CURRENCY_RATES.keys()),
-            variable=self.currency_to_var,
-            command=self._on_currency_change,
-            height=40,
-            corner_radius=8
-        )
-        self.currency_to.grid(row=0, column=1, sticky="ew")
+        self.from_label.grid(row=0, column=0, padx=10, pady=8)
 
         # Swap button
         swap_btn = ctk.CTkButton(
-            container,
-            text="⇅  Swap",
-            font=ctk.CTkFont(size=14),
-            fg_color=theme["button_bg"],
-            hover_color=theme["button_hover"],
-            text_color=theme["text_color"],
+            selected_frame,
+            text="⇅",
+            font=ctk.CTkFont(size=18),
+            fg_color=theme["accent_color"],
+            hover_color=theme["accent_hover"],
+            text_color="#ffffff",
+            width=40,
             height=36,
             corner_radius=8,
             command=self._swap_currencies
         )
-        swap_btn.grid(row=4, column=0, pady=10)
+        swap_btn.grid(row=0, column=1, padx=10)
+
+        # To currency display
+        self.to_display = ctk.CTkFrame(selected_frame, fg_color=theme["button_bg"], corner_radius=8)
+        self.to_display.grid(row=0, column=2, padx=5, sticky="ew")
+        self.to_display.grid_columnconfigure(0, weight=1)
+
+        self.to_label = ctk.CTkLabel(
+            self.to_display, text="EUR",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color=theme["text_color"]
+        )
+        self.to_label.grid(row=0, column=0, padx=10, pady=8)
 
         # Result
         self.currency_result_label = ctk.CTkLabel(
             container,
             text="",
-            font=ctk.CTkFont(size=32, weight="bold"),
+            font=ctk.CTkFont(size=28, weight="bold"),
             text_color=theme["accent_color"]
         )
-        self.currency_result_label.grid(row=5, column=0, pady=(20, 30))
+        self.currency_result_label.grid(row=3, column=0, pady=(0, 10))
+
+        # Search bar
+        search_frame = ctk.CTkFrame(container, fg_color="transparent")
+        search_frame.grid(row=4, column=0, pady=(0, 10), padx=20, sticky="ew")
+        search_frame.grid_columnconfigure(0, weight=1)
+
+        self.currency_search_var = ctk.StringVar()
+        self.currency_search_var.trace("w", self._filter_currencies)
+
+        self.search_entry = ctk.CTkEntry(
+            search_frame,
+            textvariable=self.currency_search_var,
+            placeholder_text="🔍 Search currencies...",
+            font=ctk.CTkFont(size=14),
+            height=36,
+            corner_radius=8
+        )
+        self.search_entry.grid(row=0, column=0, sticky="ew")
+
+        # Currency list container
+        list_container = ctk.CTkFrame(container, fg_color=theme["bg_color"], corner_radius=8)
+        list_container.grid(row=5, column=0, sticky="nsew", padx=20, pady=(0, 15))
+        list_container.grid_columnconfigure(0, weight=1)
+        list_container.grid_rowconfigure(0, weight=1)
+
+        # Scrollable frame for currencies
+        self.currency_scroll = ctk.CTkScrollableFrame(
+            list_container,
+            fg_color=theme["bg_color"],
+            label_text=""
+        )
+        self.currency_scroll.grid(row=0, column=0, sticky="nsew")
+        self.currency_scroll.grid_columnconfigure(0, weight=1)
+
+        # Selection mode: "from" or "to"
+        self.currency_select_mode = "from"
+        self.currency_from_var = ctk.StringVar(value="USD")
+        self.currency_to_var = ctk.StringVar(value="EUR")
+
+        # Build currency list
+        self._build_currency_list()
 
         # Initial conversion
+        self._on_currency_change()
+
+    def _build_currency_list(self):
+        """Build the scrollable currency list."""
+        theme = THEMES[self.current_theme]
+
+        # Clear existing
+        for widget in self.currency_scroll.winfo_children():
+            widget.destroy()
+
+        # Sort currencies alphabetically
+        sorted_currencies = sorted(CURRENCY_RATES.keys(), key=lambda x: x.lower())
+
+        for i, code in enumerate(sorted_currencies):
+            symbol = CURRENCY_SYMBOLS.get(code, "")
+            rate = CURRENCY_RATES[code]
+
+            row_frame = ctk.CTkFrame(self.currency_scroll, fg_color="transparent")
+            row_frame.grid(row=i, column=0, sticky="ew", padx=5, pady=1)
+            row_frame.grid_columnconfigure(1, weight=1)
+
+            # Symbol
+            sym_label = ctk.CTkLabel(
+                row_frame, text=symbol,
+                font=ctk.CTkFont(size=14),
+                text_color=theme["text_secondary"],
+                width=40,
+                anchor="w"
+            )
+            sym_label.grid(row=0, column=0, padx=(10, 5))
+
+            # Code and name
+            code_label = ctk.CTkLabel(
+                row_frame, text=f"{code}",
+                font=ctk.CTkFont(size=14, weight="bold"),
+                text_color=theme["text_color"],
+                anchor="w"
+            )
+            code_label.grid(row=0, column=1, sticky="w", padx=5)
+
+            # Rate
+            rate_label = ctk.CTkLabel(
+                row_frame, text=f"1 USD = {rate:,.2f}",
+                font=ctk.CTkFont(size=12),
+                text_color=theme["text_secondary"],
+                anchor="e"
+            )
+            rate_label.grid(row=0, column=2, padx=(5, 10))
+
+            # Make row clickable
+            for widget in row_frame.winfo_children():
+                widget.bind("<Button-1>", lambda e, c=code: self._on_currency_select(c))
+            row_frame.bind("<Button-1>", lambda e, c=code: self._on_currency_select(c))
+
+            # Hover effect
+            def on_enter(e, f=row_frame, bg=theme["button_bg"]):
+                f.configure(fg_color=bg)
+            def on_leave(e, f=row_frame):
+                f.configure(fg_color="transparent")
+
+            row_frame.bind("<Enter>", on_enter)
+            row_frame.bind("<Leave>", on_leave)
+            for widget in row_frame.winfo_children():
+                widget.bind("<Enter>", on_enter)
+                widget.bind("<Leave>", on_leave)
+
+    def _filter_currencies(self, *args):
+        """Filter currency list based on search."""
+        query = self.currency_search_var.get().lower()
+
+        for widget in self.currency_scroll.winfo_children():
+            # Get the code label text
+            code_label = widget.winfo_children()[1]
+            code = code_label.cget("text").lower()
+
+            if query in code or query == "":
+                widget.grid()
+            else:
+                widget.grid_remove()
+
+    def _on_currency_select(self, code):
+        """Handle currency selection from list."""
+        if self.currency_select_mode == "from":
+            self.currency_from_var.set(code)
+            self.from_label.configure(text=code)
+            self.currency_select_mode = "to"
+        else:
+            self.currency_to_var.set(code)
+            self.to_label.configure(text=code)
+            self.currency_select_mode = "from"
+
         self._on_currency_change()
 
     def _on_currency_change(self, event=None):
